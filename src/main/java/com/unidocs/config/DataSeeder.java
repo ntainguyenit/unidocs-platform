@@ -49,28 +49,7 @@ public class DataSeeder implements CommandLineRunner {
         } catch (Exception e) {
             // Ignore constraint drop errors (e.g. on H2)
         }
-        cleanupUnusedUniversities();
         seedData();
-    }
-
-    private void cleanupUnusedUniversities() {
-        List<University> allUnis = universityRepository.findAll();
-        for (University uni : allUnis) {
-            if (!uni.getShortName().equals("HUSC") && !uni.getShortName().equals("HUL")) {
-                List<Faculty> faculties = facultyRepository.findAll().stream()
-                        .filter(f -> f.getUniversity().getId().equals(uni.getId()))
-                        .collect(Collectors.toList());
-                
-                for (Faculty f : faculties) {
-                    List<Course> courses = courseRepository.findAll().stream()
-                            .filter(c -> c.getFaculty().getId().equals(f.getId()))
-                            .collect(Collectors.toList());
-                    courseRepository.deleteAll(courses);
-                }
-                facultyRepository.deleteAll(faculties);
-                universityRepository.delete(uni);
-            }
-        }
     }
 
     private void seedData() throws Exception {
