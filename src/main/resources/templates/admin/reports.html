@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Quản lý Báo cáo | Admin UniDocs')}"></head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    
+    <!-- Admin Navbar -->
+    <header class="bg-primary text-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        <span class="text-xl font-bold tracking-tight">UniDocs Admin</span>
+                    </div>
+                    <nav class="hidden md:flex items-center gap-4">
+                        <a th:href="@{/admin/documents}" class="text-sm text-blue-100 hover:text-white transition-colors">Quản lý Tài liệu</a>
+                        <a th:href="@{/admin/reports}" class="text-sm text-white font-semibold border-b-2 border-white pb-1">Quản lý Báo cáo</a>
+                    </nav>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a th:href="@{/}" class="text-sm text-blue-100 hover:text-white transition-colors flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Về trang web
+                    </a>
+                    <form th:action="@{/admin/logout}" method="post" class="inline">
+                        <button type="submit" class="text-sm font-medium bg-red-600 hover:bg-red-700 text-white py-1.5 px-3 rounded transition-colors">
+                            Đăng xuất
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-900">Quản lý Báo cáo & Lỗi</h1>
+        </div>
+
+        <div th:if="${successMessage}" class="mb-4 bg-green-50 border-l-4 border-green-400 p-4 rounded-md">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-green-700" th:text="${successMessage}"></p>
+                </div>
+            </div>
+        </div>
+        
+        <div th:if="${errorMessage}" class="mb-4 bg-red-50 border-l-4 border-red-400 p-4 rounded-md">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-red-700" th:text="${errorMessage}"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng danh sách báo cáo -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="px-6 py-3 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
+                <h2 class="text-sm font-medium text-gray-700">Danh sách Báo cáo</h2>
+                <!-- Status Filter Form -->
+                <div class="text-sm">
+                    <select onchange="window.location.href='?status=' + this.value" class="border border-gray-300 rounded p-1.5 text-sm focus:ring-primary focus:border-primary">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="PENDING" th:selected="${param.status != null and param.status[0] == 'PENDING'}">Chờ xử lý</option>
+                        <option value="RESOLVED" th:selected="${param.status != null and param.status[0] == 'RESOLVED'}">Đã giải quyết</option>
+                        <option value="DISMISSED" th:selected="${param.status != null and param.status[0] == 'DISMISSED'}">Bỏ qua</option>
+                    </select>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tài liệu</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Loại Lỗi</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Chi tiết / Tin nhắn</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Trạng thái</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ngày báo cáo</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr th:each="report : ${reportPage.content}" class="hover:bg-gray-50 transition-colors">
+                            <td class="px-6 py-4">
+                                <div class="text-sm font-medium text-gray-900" th:text="${report.document.title}">Đề cương</div>
+                                <a th:href="@{/document/{slug}/view(slug=${report.document.slug})}" target="_blank" class="text-xs text-blue-600 hover:text-blue-800">
+                                    Xem tài liệu
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 inline ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span th:if="${report.reportType.name() == 'BROKEN_LINK'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                    Link Hỏng
+                                </span>
+                                <span th:if="${report.reportType.name() == 'VIOLATION'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                                    Vi phạm nội dung
+                                </span>
+                                <span th:if="${report.reportType.name() == 'OTHER'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
+                                    Khác
+                                </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-900 line-clamp-2" th:text="${report.message ?: 'Không có tin nhắn'}"></div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span th:if="${report.status.name() == 'PENDING'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                    Chờ xử lý
+                                </span>
+                                <span th:if="${report.status.name() == 'RESOLVED'}" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    Đã xử lý
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" 
+                                th:text="${#temporals.format(report.createdAt, 'dd/MM/yyyy HH:mm')}">
+                                15/06/2026 14:27
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                <div class="flex items-center justify-center space-x-2">
+                                    <!-- Đã xử lý (chỉ hiện khi pending) -->
+                                    <form th:if="${report.status.name() == 'PENDING'}" th:action="@{/admin/reports/{id}/resolve(id=${report.id})}" method="post" class="inline" onsubmit="return confirm('Bạn xác nhận đã xử lý báo cáo này và tài liệu không có vấn đề?');">
+                                        <button type="submit" class="text-green-600 hover:text-green-900 bg-green-50 hover:bg-green-100 p-2 rounded-md transition-colors" title="Đánh dấu Đã xử lý">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                    
+                                    <!-- Xóa tài liệu -->
+                                    <form th:action="@{/admin/reports/{id}/delete-document(id=${report.id})}" method="post" class="inline" onsubmit="return confirm('Hành động này sẽ XÓA VĨNH VIỄN tài liệu vi phạm. Bạn có chắc chắn?');">
+                                        <button type="submit" class="text-red-600 hover:text-red-900 bg-red-50 hover:bg-red-100 p-2 rounded-md transition-colors" title="Xóa tài liệu vi phạm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <tr th:if="${reportPage.content.empty}">
+                            <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <p class="text-lg">Không có báo cáo nào hiện tại.</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div th:if="${totalPages > 1}" class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <a th:if="${currentPage > 0}" th:href="@{/admin/reports(page=${currentPage - 1})}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Trước</a>
+                        <a th:if="${currentPage < totalPages - 1}" th:href="@{/admin/reports(page=${currentPage + 1})}" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">Tiếp</a>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                Trang <span class="font-medium" th:text="${currentPage + 1}">1</span> / <span class="font-medium" th:text="${totalPages}">10</span>
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <a th:if="${currentPage > 0}" th:href="@{/admin/reports(page=${currentPage - 1})}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Previous</span>
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                                
+                                <span th:each="i : ${totalPages > 0 ? #numbers.sequence(0, totalPages - 1) : null}">
+                                    <a th:if="${i == currentPage}" th:href="@{/admin/reports(page=${i})}" aria-current="page" class="z-10 bg-blue-50 border-blue-500 text-blue-600 relative inline-flex items-center px-4 py-2 border text-sm font-medium" th:text="${i + 1}">1</a>
+                                    <a th:unless="${i == currentPage}" th:href="@{/admin/reports(page=${i})}" class="bg-white border-gray-300 text-gray-500 hover:bg-gray-50 relative inline-flex items-center px-4 py-2 border text-sm font-medium" th:text="${i + 1}">2</a>
+                                </span>
+                                
+                                <a th:if="${currentPage < totalPages - 1}" th:href="@{/admin/reports(page=${currentPage + 1})}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Next</span>
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                    </svg>
+                                </a>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-white border-t mt-auto">
+        <div class="container mx-auto px-4 py-4 text-center text-sm text-gray-500">
+            &copy; 2026 UniDocs Admin Dashboard. All rights reserved.
+        </div>
+    </footer>
+    
+    <div th:replace="~{fragments/base :: scripts}"></div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const eventSource = new EventSource('/admin/api/notifications/stream');
+            
+            eventSource.addEventListener('report', (e) => {
+                const data = JSON.parse(e.data);
+                console.log('SSE Report Received:', data);
+                
+                let bgColor = '#3b82f6'; // blue
+                if (data.priority === 'HIGH') bgColor = '#ef4444'; // red
+                else if (data.priority === 'MEDIUM') bgColor = '#f59e0b'; // amber
+                
+                let msg = `Có báo cáo (${data.reportType}) cho tài liệu: ${data.documentTitle}. Đã có ${data.totalPendingReports} lượt báo lỗi. Ưu tiên: ${data.priority}`;
+                
+                if (typeof Toastify !== 'undefined') {
+                    Toastify({
+                        text: msg,
+                        duration: 10000,
+                        close: true,
+                        gravity: "top", 
+                        position: "right",
+                        style: {
+                            background: bgColor,
+                            color: "white",
+                            fontWeight: "500",
+                            padding: "12px 20px",
+                            fontSize: "14px",
+                            borderRadius: "8px",
+                            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
+                        },
+                        destination: "/admin/reports",
+                        newWindow: false
+                    }).showToast();
+                }
+                
+                // If on reports page, optionally reload
+                setTimeout(() => {
+                    window.location.reload();
+                }, 2000);
+            });
+            
+            eventSource.onerror = (e) => {
+                console.error('Lỗi kết nối Notification Stream', e);
+            };
+        });
+    </script>
+</body>
+</html>

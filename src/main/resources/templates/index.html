@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Trang chủ | UniDocs')}"></head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    
+    <div th:replace="~{fragments/base :: navbar}"></div>
+    
+    <div class="hidden bg-blue-600 bg-red-600 bg-green-600 bg-yellow-500 bg-indigo-600 bg-emerald-600 bg-rose-600 bg-cyan-600 hover:-translate-y-1"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        
+        <div class="bg-primary-dark text-white rounded-xl p-8 mb-8 shadow-lg relative overflow-hidden">
+            <div class="relative z-10">
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-white">Kho Lưu Trữ Đề Thi & Tài Liệu</h1>
+                <p class="text-gray-300 text-lg max-w-2xl">Truy cập hàng ngàn đề thi các năm và đề cương ôn tập các học phần hoàn toàn miễn phí. Không cần đăng nhập, tốc độ tải cực nhanh.</p>
+            </div>
+            <div class="absolute top-0 right-0 opacity-10">
+                <svg width="400" height="400" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+            </div>
+            
+            <div class="relative z-10 mt-6">
+                <button onclick="copyWebsiteLink()" class="btn bg-white/20 hover:bg-white/30 text-white border border-white/30 py-2 px-4 rounded-md flex items-center gap-2 backdrop-blur-sm transition-all text-sm font-medium">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                    Chia sẻ trang web
+                </button>
+            </div>
+        </div>
+
+        <div id="toastNotification" class="fixed bottom-4 right-4 bg-gray-800 text-white px-4 py-3 rounded shadow-lg transform transition-transform translate-y-20 opacity-0 z-50 flex items-center gap-3">
+            <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+            <span class="text-sm font-medium">Đã sao chép liên kết thành công!</span>
+        </div>
+
+        <script>
+            function copyWebsiteLink() {
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(window.location.href).then(() => {
+                        showToast();
+                    });
+                } else {
+                    // Fallback for older browsers
+                    let textArea = document.createElement("textarea");
+                    textArea.value = window.location.href;
+                    textArea.style.position = "fixed";
+                    textArea.style.left = "-999999px";
+                    textArea.style.top = "-999999px";
+                    document.body.appendChild(textArea);
+                    textArea.focus();
+                    textArea.select();
+                    try {
+                        document.execCommand('copy');
+                        showToast();
+                    } catch (err) {
+                        console.error('Fallback: Oops, unable to copy', err);
+                    }
+                    document.body.removeChild(textArea);
+                }
+            }
+
+            function showToast() {
+                const toast = document.getElementById('toastNotification');
+                toast.classList.remove('translate-y-20', 'opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('translate-y-20', 'opacity-0');
+                }, 3000);
+            }
+        </script>
+
+        <div class="mb-12">
+            <div class="flex justify-between items-end mb-6 border-b border-divider pb-2">
+                <h2 class="text-2xl text-text">Các Trường đại học thành viên</h2>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a th:each="uni : ${universities}" th:href="@{/university/{slug}(slug=${uni.slug})}" class="card group hover:-translate-y-1 hover:shadow-md transition-all cursor-pointer flex flex-col items-center justify-center p-6 text-center h-48">
+                    <div class="w-16 h-16 mb-4 flex items-center justify-center">
+                        <img th:if="${uni.logoUrl}" th:src="${uni.logoUrl}" alt="Logo" class="w-full h-full object-contain drop-shadow-sm group-hover:scale-110 transition-transform duration-300" />
+                        <div th:unless="${uni.logoUrl}" th:class="${uni.color} + ' text-white rounded-full w-full h-full flex items-center justify-center font-bold text-xl shadow-inner group-hover:scale-110 transition-transform duration-300'">
+                            <span th:text="${#strings.substring(uni.shortName,0,2)}"></span>
+                        </div>
+                    </div>
+                    <h3 class="text-sm font-bold text-text group-hover:text-primary transition-colors" th:text="${uni.name}">Đại học</h3>
+                    <p class="text-xs text-gray-500 mt-1 font-medium" th:text="${uni.shortName}">SHORT</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="mb-12">
+            <div class="flex justify-between items-end mb-6 border-b border-divider pb-2">
+                <h2 class="text-2xl text-text">Thông báo từ nhà trường</h2>
+                <a href="https://ums.husc.edu.vn/" target="_blank" class="text-primary hover:text-primary-dark font-medium text-sm transition-colors">Xem tất cả &rarr;</a>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm border border-divider overflow-hidden">
+                <div th:if="${#lists.isEmpty(notifications)}" class="text-center text-gray-500 py-8">
+                    <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                    </svg>
+                    <p class="text-lg font-medium text-gray-900">Tính năng đang được phát triển</p>
+                    <p class="mt-1">Nơi tổng hợp các thông báo mới nhất về học vụ, thi cử từ các trường.</p>
+                </div>
+                
+                <ul th:unless="${#lists.isEmpty(notifications)}" class="divide-y divide-gray-100">
+                    <li th:each="note : ${notifications}" class="hover:bg-gray-50 transition-colors">
+                        <a th:href="${note.link}" target="_blank" class="block p-4 sm:p-5">
+                            <div class="flex items-start gap-4">
+                                <div class="shrink-0 mt-1">
+                                    <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-primary">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                                        </svg>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h3 class="text-base font-bold text-gray-900 line-clamp-2" th:text="${note.title}">Tiêu đề</h3>
+                                    <p class="mt-1 text-sm text-gray-500 line-clamp-2" th:text="${note.content}">Nội dung</p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="mb-12">
+            <div class="flex justify-between items-end mb-6 border-b border-divider pb-2">
+                <h2 class="text-2xl text-text">Tiện ích sinh viên</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Giả lập thi -->
+                <a th:href="@{/utilities/exam-simulation}" class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer block">
+                    <div class="p-3 bg-red-50 text-red-600 rounded-lg shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 group-hover:text-primary transition-colors">Giả lập Thi</h3>
+                        <p class="text-sm text-gray-500 mt-1">Phòng thi mô phỏng với đồng hồ đếm ngược, rèn luyện áp lực thời gian.</p>
+                    </div>
+                </a>
+
+                <!-- Tạo lịch biểu -->
+                <a th:href="@{/utilities/timetable}" class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer block group">
+                    <div class="p-3 bg-blue-50 text-blue-600 rounded-lg shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 group-hover:text-primary transition-colors">Tạo lịch biểu</h3>
+                        <p class="text-sm text-gray-500 mt-1">Thiết kế thời khóa biểu cá nhân trực quan và xuất file PDF tiện lợi.</p>
+                    </div>
+                </a>
+
+                <!-- Thông tin đăng ký tín chỉ -->
+                <div class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow">
+                    <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900">Đăng ký tín chỉ</h3>
+                        <p class="text-sm text-gray-500 mt-1">Hướng dẫn sử dụng trang tín chỉ. Vui lòng truy cập <a href="https://drive.google.com/file/d/1DCdsiGrpOrqW1k8ruilcowmN-6Ep-4U8/view" target="_blank" class="text-blue-800 font-bold hover:underline transition-colors">Tại đây</a>.</p>
+                        <p class="text-sm text-gray-500 mt-1"><a href="javascript:void(0)" onclick="openInfoModal('TinChi')" class="text-blue-800 font-bold hover:underline transition-colors">Mẹo đăng ký tín chỉ</a></p>
+                    </div>
+                </div>
+
+                <!-- Biểu mẫu -->
+                <a href="https://husc.edu.vn/taifile.php" target="_blank" class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow block group">
+                    <div class="p-3 bg-yellow-50 text-yellow-600 rounded-lg shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 group-hover:text-primary transition-colors">Biểu mẫu</h3>
+                        <p class="text-sm text-gray-500 mt-1">Các biểu mẫu dành cho sinh viên lấy từ website trường Đại học Khoa học Huế.</p>
+                    </div>
+                </a>
+
+                <!-- Tính điểm GPA -->
+                <div class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer">
+                    <div class="p-3 bg-green-50 text-green-600 rounded-lg shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900">Tính điểm GPA</h3>
+                        <p class="text-sm text-gray-500 mt-1">Công cụ giúp sinh viên tự tính điểm trung bình tích lũy dễ dàng.</p>
+                    </div>
+                </div>
+
+                <!-- Điều kiện tốt nghiệp -->
+                <div class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer" onclick="openInfoModal('TotNghiep')">
+                    <div class="p-3 bg-purple-50 text-purple-600 rounded-lg shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                            <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5l4-2.222" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 group-hover:text-primary transition-colors">Điều kiện tốt nghiệp</h3>
+                        <p class="text-sm text-gray-500 mt-1">Thông tin chi tiết các điều kiện để được xét công nhận tốt nghiệp.</p>
+                    </div>
+                </div>
+
+                <!-- Lối tắt truy cập nhanh -->
+                <div class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer block group" onclick="openInfoModal('LoiTat')">
+                    <div class="p-3 bg-teal-50 text-teal-600 rounded-lg shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 group-hover:text-primary transition-colors">Lối tắt truy cập nhanh</h3>
+                        <p class="text-sm text-gray-500 mt-1">Tổng hợp các đường link quan trọng và hữu ích dành cho sinh viên.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </main>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+    
+    <div th:replace="~{fragments/base :: scripts}"></div>
+    
+    <div th:replace="~{fragments/base :: scripts}"></div>
+
+    <!-- Modal Info -->
+    <div id="infoModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden p-4">
+        <div class="absolute inset-0 backdrop-blur-sm" style="background-color: rgba(0,0,0,0.5);" onclick="closeInfoModal()"></div>
+        <div class="bg-white rounded-xl shadow-2xl z-10 w-full max-w-4xl max-h-[90vh] flex flex-col transition-all duration-300">
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <h3 class="text-xl font-bold text-gray-900" id="infoModalTitle">Tiêu đề</h3>
+                <div class="flex gap-2">
+                    <button onclick="copyModalContent()" class="text-sm flex items-center gap-1 text-primary hover:bg-blue-50 px-3 py-1.5 rounded transition-colors border border-blue-100 font-medium">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        Copy
+                    </button>
+                    <button onclick="closeInfoModal()" class="text-gray-400 hover:text-gray-600 transition-colors p-1">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 overflow-y-auto text-gray-700 leading-relaxed text-sm md:text-base space-y-4" id="infoModalBody">
+                <!-- Content injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Content for Modals -->
+    <div id="contentTotNghiep" class="hidden">
+        <p class="font-bold mb-3 text-lg">Các điều kiện để được xét công nhận tốt nghiệp bao gồm:</p>
+        <ul class="list-disc pl-6 space-y-3">
+            <li>Đơn xin xét tốt nghiệp</li>
+            <li>Bản sao bằng tốt nghiệp THPT</li>
+            <li>Bản sao chứng chỉ Ngoại ngữ không chuyên</li>
+            <li>Bản sao chứng chỉ Giáo dục quốc phòng</li>
+            <li>Bản sao chứng chỉ Giáo dục thể chất</li>
+            <li>Bản sao chứng chỉ Công nghệ thông tin cơ bản <br><span class="text-gray-500 text-sm">(Ngoại trừ sinh viên liên quan đến ngành Công nghệ thông tin)</span></li>
+            <li>Đối chiếu kết quả học tập với chương trình đào tạo để làm thủ tục huỷ các học phần tích luỹ thừa</li>
+            <li>Nộp lệ phí tại phòng Kế hoạch, Tài chính và Cơ sở vật chất</li>
+        </ul>
+    </div>
+
+    <div id="contentTinChi" class="hidden">
+        <h4 class="font-bold text-lg text-primary mb-2">1. Chuẩn bị link trực tiếp đến nhóm lớp</h4>
+        <p>Để đăng ký nhanh, bạn cần chuẩn bị sẵn đường link dẫn thẳng vào nhóm lớp thay vì tìm kiếm thủ công.</p>
+        <p class="font-medium mt-3 text-gray-900">Cấu trúc link:</p>
+        <div class="bg-gray-100 p-3 rounded-lg text-sm font-mono break-all my-2 text-blue-800">https://student.husc.edu.vn/Course/Details/[NămHọc].[HọcKỳ].[MãHọcPhần].[NhómLớp]/</div>
+        
+        <p class="font-medium mt-4 text-gray-900">Các thành phần cần thay thế:</p>
+        <ul class="list-disc pl-6 space-y-2 mb-4 mt-2">
+            <li><strong>[NămHọc]</strong>: Ví dụ năm học 2025-2026 thì điền là <code class="bg-gray-100 px-1.5 py-0.5 rounded text-red-600 font-bold">2025-2026</code></li>
+            <li><strong>[HọcKỳ]</strong>: Tùy theo học kỳ mà điền <code class="bg-gray-100 px-1.5 py-0.5 rounded text-red-600 font-bold">1</code> hoặc <code class="bg-gray-100 px-1.5 py-0.5 rounded text-red-600 font-bold">2</code></li>
+            <li><strong>[MãHọcPhần]</strong>: Ví dụ <code class="bg-gray-100 px-1.5 py-0.5 rounded text-red-600 font-bold">TIN1083</code>, <code class="bg-gray-100 px-1.5 py-0.5 rounded text-red-600 font-bold">MIN1083</code> (Mã này lấy ở TKB dự kiến trong thông báo trang tín chỉ)</li>
+            <li><strong>[NhómLớp]</strong>: Ghi đủ 3 chữ số. Ví dụ nhóm 1 là <code class="bg-gray-100 px-1.5 py-0.5 rounded text-red-600 font-bold">001</code>, nhóm 10 là <code class="bg-gray-100 px-1.5 py-0.5 rounded text-red-600 font-bold">010</code>. <span class="text-red-500 font-medium">Không được điền là 01 hay 1.</span></li>
+        </ul>
+        
+        <div class="bg-blue-50 border-l-4 border-blue-500 p-3 rounded text-sm my-4 text-blue-900">
+            <strong>Lưu ý:</strong> Nhớ là có dấu <code class="font-bold text-lg">/</code> ở cuối link nhé! Nếu thêm vào mà load bị lỗi thì thử xóa dấu này đi (linh hoạt sử dụng nha).
+        </div>
+        
+        <p class="italic text-gray-800"><strong>Ví dụ minh họa:</strong> Đăng ký môn có mã học phần TIN1083, nhóm 1, học kỳ 2, năm học 2025-2026, đường link sẽ là:</p>
+        <div class="bg-gray-100 p-3 rounded-lg text-sm font-mono break-all my-2 font-bold text-blue-700">https://student.husc.edu.vn/Course/Details/2025-2026.2.TIN1083.001/</div>
+
+        <h4 class="font-bold text-lg text-primary mt-8 mb-3">2. Bí kíp "Săn" tín chỉ</h4>
+        <ul class="list-disc pl-6 space-y-3">
+            <li><strong>Đăng nhập sớm:</strong> Đăng nhập vào trang tín chỉ trước 2 tiếng. Sau đó paste hết link trực tiếp vào tất cả các tabs, xong để nguyên đó.</li>
+            <li><strong>Cài đặt extension hỗ trợ:</strong> Có thể cài extension <em>"Reload All Pages"</em> trên Google Chrome. Extension này có tác dụng F5 lại tất cả tab cùng lúc, khi đó bạn chỉ cần nhanh tay click đăng ký. <em>(Cách này được chia sẻ nhưng chưa test kỹ nhé!)</em></li>
+            <li><strong>Canh thời gian:</strong> Thường thì giờ mở đăng ký tín chỉ là 10h nhưng sẽ khá hên xui. Bạn nên canh trước 5-10 phút. Đôi lúc đúng giờ, đôi lúc sẽ muộn 5-10 phút. Sau khi mở thì dùng reload all pages và nhanh tay đăng ký.</li>
+            <li><strong>Mã xác nhận (Captcha):</strong> Nhớ luôn vụ mở mã xác nhận sang tab khác, chờ một lúc để nó mở. Thường thì một mã sẽ tồn tại tầm 3-5 phút, qua thời gian mà nhập vào auto sai, bạn phải F5 trang đó để lấy mã mới.</li>
+        </ul>
+        
+        <p class="font-bold text-green-600 mt-6 text-center text-lg">Chúc các bạn may mắn!</p>
+    </div>
+    
+    <div id="contentLoiTat" class="hidden">
+        <p class="font-bold mb-4 text-lg">Danh sách các đường link truy cập nhanh:</p>
+        <ul class="space-y-3">
+            <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <span class="font-medium">Trang thông tin đào tạo:</span> <a href="https://student.husc.edu.vn" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+            </li>
+            <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <span class="font-medium">Cổng thông tin Đại học Huế:</span> <a href="https://hueuni.edu.vn" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+            </li>
+            <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <span class="font-medium">Website Trường Đại học Khoa học:</span> <a href="https://husc.edu.vn" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+            </li>
+        </ul>
+        <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
+            <strong>Lưu ý pháp lý:</strong> UniDocs chỉ cung cấp tính năng chuyển tiếp đường dẫn nhằm hỗ trợ sinh viên truy cập nhanh. Chúng tôi hoàn toàn không chịu trách nhiệm về nội dung, tính khả dụng hoặc bảo mật của các trang web bên ngoài này. Vui lòng tự bảo vệ thông tin cá nhân của bạn khi truy cập vào các trang đó.
+        </div>
+    </div>
+
+    <script>
+        function openInfoModal(type) {
+            let title = "";
+            let contentId = "";
+            if(type === 'TotNghiep') {
+                title = "Điều kiện tốt nghiệp";
+                contentId = "contentTotNghiep";
+            } else if(type === 'TinChi') {
+                title = "Mẹo đăng ký tín chỉ hiệu quả";
+                contentId = "contentTinChi";
+            } else if(type === 'LoiTat') {
+                title = "Lối tắt truy cập nhanh";
+                contentId = "contentLoiTat";
+            }
+            
+            document.getElementById('infoModalTitle').textContent = title;
+            document.getElementById('infoModalBody').innerHTML = document.getElementById(contentId).innerHTML;
+            document.getElementById('infoModal').classList.remove('hidden');
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').classList.add('hidden');
+        }
+
+        function copyModalContent() {
+            const body = document.getElementById('infoModalBody');
+            const textToCopy = body.innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("Đã copy văn bản thành công!");
+            }).catch(err => {
+                console.error('Lỗi copy: ', err);
+                alert("Không thể copy. Trình duyệt của bạn không hỗ trợ.");
+            });
+        }
+    </script>
+
+    <style>
+        .group\/btn:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</body>
+</html>

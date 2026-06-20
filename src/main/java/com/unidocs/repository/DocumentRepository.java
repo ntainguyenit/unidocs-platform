@@ -1,0 +1,25 @@
+package com.unidocs.repository;
+
+import com.unidocs.domain.Document;
+import com.unidocs.domain.DocumentStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
+
+@Repository
+public interface DocumentRepository extends JpaRepository<Document, Long> {
+    List<Document> findByCourseIdAndStatusOrderByUploadedAtDesc(Long courseId, DocumentStatus status);
+    
+    Page<Document> findAllByOrderByReliabilityScoreDescUploadedAtDesc(Pageable pageable);
+    
+    List<Document> findAllByOrderByReliabilityScoreDescUploadedAtDesc();
+    
+    Optional<Document> findBySha256Hash(String hash);
+    Optional<Document> findBySlug(String slug);
+    List<Document> findByStatus(DocumentStatus status);
+    Page<Document> findByStatusOrderByReliabilityScoreDescUploadedAtDesc(DocumentStatus status, Pageable pageable);
+}

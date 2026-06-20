@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">UniDocs</title>
+    <link th:href="@{/css/output.css}" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body>
+    <header th:fragment="navbar" class="bg-primary text-white shadow-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <a th:href="@{/}" class="text-2xl font-bold tracking-wider flex items-center gap-2 shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                UniDocs
+            </a>
+            <div class="flex items-center gap-4 flex-grow justify-end max-w-3xl">
+                <div id="realtimeDate" class="hidden md:block text-sm text-blue-50 font-medium whitespace-nowrap opacity-90"></div>
+                <div class="relative group w-full max-w-lg" id="searchContainer">
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm học phần, đề thi..." class="w-full px-4 py-2 pr-10 rounded text-text focus:outline-none focus:ring-2 focus:ring-blue-300" autocomplete="off">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute right-3 top-2.5 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    
+                    <div id="searchResults" class="hidden absolute top-full mt-1 w-full bg-white rounded shadow-lg border border-gray-200 overflow-hidden z-50 max-h-96 overflow-y-auto">
+                    </div>
+                </div>
+                <div class="relative group" id="settingsDropdownContainer">
+                    <button id="settingsBtn" class="p-2 hover:bg-blue-700/50 rounded-lg transition-colors shrink-0" title="Cài đặt">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </button>
+                    <!-- Dropdown menu -->
+                    <div id="settingsDropdown" class="hidden absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-xl border border-gray-100 z-50 overflow-hidden text-sm text-gray-700">
+                        <div class="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
+                            <span class="block font-semibold text-gray-900">Cài đặt hệ thống</span>
+                        </div>
+                        <ul class="py-2" aria-labelledby="settingsBtn">
+                            <li>
+                                <div class="px-4 py-2 hover:bg-gray-50 flex items-center justify-between cursor-pointer" onclick="toggleLanguage()">
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
+                                        <span class="lang-text" data-vi="Ngôn ngữ" data-en="Language">Ngôn ngữ</span>
+                                    </div>
+                                    <span id="currentLang" class="text-xs font-bold bg-blue-100 text-primary px-2 py-0.5 rounded">VI</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="px-4 py-2 hover:bg-gray-50 flex items-center justify-between cursor-pointer" onclick="cycleTheme()">
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                                        <span class="lang-text" data-vi="Giao diện" data-en="Theme">Giao diện</span>
+                                    </div>
+                                    <span id="currentTheme" class="text-xs font-medium text-gray-500">Sáng</span>
+                                </div>
+                            </li>
+                            <li>
+                                <a href="#" onclick="showManualModal(); return false;" class="block px-4 py-2 hover:bg-gray-50 flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                    <span class="lang-text" data-vi="Hướng dẫn sử dụng" data-en="User Guide">Hướng dẫn sử dụng</span>
+                                </a>
+                            </li>
+                        </ul>
+                        <div class="border-t border-gray-100 py-2">
+                            <a href="/admin/login" class="block px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-primary font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
+                                <span class="lang-text" data-vi="Đăng nhập (Admin)" data-en="Login (Admin)">Đăng nhập (Admin)</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div th:fragment="scripts">
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+        
+        <!-- Report Modal -->
+        <div id="reportModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden p-4">
+            <div class="absolute inset-0 backdrop-blur-sm bg-black/50" onclick="closeReportModal()"></div>
+            <div class="bg-white rounded-xl shadow-2xl z-10 w-full max-w-md overflow-hidden">
+                <form id="reportForm" onsubmit="submitReport(event)">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-gray-900">Báo cáo tài liệu</h3>
+                        <button type="button" onclick="closeReportModal()" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <input type="hidden" id="reportDocumentId" name="documentId" value="">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Lý do báo cáo:</label>
+                            <select id="reportType" name="reportType" required class="w-full form-input rounded-md border-gray-300 focus:border-red-500 focus:ring focus:ring-red-200">
+                                <option value="BROKEN_LINK">Lỗi tập tin / Không tải được</option>
+                                <option value="VIOLATION">Vi phạm bản quyền / Nội dung xấu</option>
+                                <option value="OTHER">Lý do khác</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Chi tiết (Tùy chọn):</label>
+                            <textarea id="reportMessage" name="message" rows="3" class="w-full form-input rounded-md border-gray-300 focus:border-red-500 focus:ring focus:ring-red-200" placeholder="Mô tả thêm về lỗi..."></textarea>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3">
+                        <button type="button" onclick="closeReportModal()" class="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded hover:bg-gray-50 font-medium transition-colors">Hủy</button>
+                        <button type="submit" id="btnSubmitReport" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 font-medium transition-colors flex items-center gap-2">
+                            Gửi báo cáo
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function openReportModal(docId) {
+                document.getElementById('reportDocumentId').value = docId;
+                document.getElementById('reportModal').classList.remove('hidden');
+            }
+            function closeReportModal() {
+                document.getElementById('reportModal').classList.add('hidden');
+            }
+            function submitReport(e) {
+                e.preventDefault();
+                const btn = document.getElementById('btnSubmitReport');
+                btn.disabled = true;
+                btn.innerText = 'Đang gửi...';
+
+                const docId = document.getElementById('reportDocumentId').value;
+                const type = document.getElementById('reportType').value;
+                const msg = document.getElementById('reportMessage').value;
+
+                fetch('/api/reports', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ documentId: docId, reportType: type, message: msg })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    btn.disabled = false;
+                    btn.innerText = 'Gửi báo cáo';
+                    if(data.message) {
+                        alert(data.message);
+                        closeReportModal();
+                    } else {
+                        alert(data.error || 'Có lỗi xảy ra');
+                    }
+                }).catch(err => {
+                    btn.disabled = false;
+                    btn.innerText = 'Gửi báo cáo';
+                    alert('Lỗi kết nối');
+                });
+            }
+            // UX Protection (bảo vệ phiên làm việc)
+            window.isFormDirty = false;
+            const beforeUnloadHandler = function (e) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            };
+
+            // Custom setter để tự động add/remove listener
+            Object.defineProperty(window, 'isFormDirty', {
+                get: function() { return this._isFormDirty || false; },
+                set: function(value) {
+                    this._isFormDirty = value;
+                    if (value) {
+                        window.addEventListener('beforeunload', beforeUnloadHandler);
+                    } else {
+                        window.removeEventListener('beforeunload', beforeUnloadHandler);
+                    }
+                }
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const dateEl = document.getElementById('realtimeDate');
+                if (dateEl) {
+                    const updateDate = () => {
+                        const now = new Date();
+                        const days = ['Chủ nhật', 'Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7'];
+                        dateEl.textContent = `${days[now.getDay()]}, ngày ${now.getDate()} tháng ${now.getMonth() + 1} năm ${now.getFullYear()}`;
+                    };
+                    updateDate();
+                    setInterval(updateDate, 60000);
+                }
+                
+                const searchInput = document.getElementById('searchInput');
+                const searchResults = document.getElementById('searchResults');
+                let allCourses = [];
+                let isLoaded = false;
+
+                function removeAccents(str) {
+                    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+                }
+
+                function renderResults(query) {
+                    let filtered = [];
+                    
+                    if (query.length < 1) {
+                        filtered = allCourses.slice(0, 10);
+                    } else {
+                        const normalizedQuery = removeAccents(query.toLowerCase());
+                        filtered = allCourses.filter(item => {
+                            return removeAccents(item.title.toLowerCase()).includes(normalizedQuery) || 
+                                   removeAccents(item.subtitle.toLowerCase()).includes(normalizedQuery);
+                        }).slice(0, 10);
+                    }
+
+                    searchResults.innerHTML = '';
+                    if (filtered.length === 0) {
+                        searchResults.innerHTML = '<div class="px-4 py-3 text-gray-500 text-sm">Không tìm thấy kết quả.</div>';
+                        searchResults.classList.remove('hidden');
+                        return;
+                    }
+
+                    filtered.forEach(item => {
+                        const a = document.createElement('a');
+                        a.href = item.url;
+                        a.className = 'block px-4 py-3 hover:bg-blue-50 border-b border-gray-100 last:border-0 transition-colors text-left';
+                        a.innerHTML = `
+                            <div class="font-semibold text-text">${item.title}</div>
+                            <div class="text-xs text-gray-500 mt-1">${item.subtitle}</div>
+                        `;
+                        searchResults.appendChild(a);
+                    });
+                    searchResults.classList.remove('hidden');
+                }
+
+                if (searchInput && searchResults) {
+                    const handleSearchInteraction = (e) => {
+                        const query = e.target.value.trim();
+                        if (!isLoaded) {
+                            fetch('/api/search')
+                                .then(res => res.json())
+                                .then(data => {
+                                    allCourses = data;
+                                    isLoaded = true;
+                                    renderResults(query);
+                                })
+                                .catch(err => {});
+                        } else {
+                            renderResults(query);
+                        }
+                    };
+
+                    searchInput.addEventListener('input', handleSearchInteraction);
+                    searchInput.addEventListener('focus', handleSearchInteraction);
+
+                    document.addEventListener('click', (e) => {
+                        if (!document.getElementById('searchContainer').contains(e.target)) {
+                            searchResults.classList.add('hidden');
+                        }
+                    });
+                }
+
+                const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+                if (scrollToTopBtn) {
+                    const toggleVisibility = () => {
+                        if (window.scrollY > 50) {
+                            scrollToTopBtn.classList.remove('opacity-0', 'invisible');
+                            scrollToTopBtn.classList.add('opacity-100', 'visible');
+                        } else {
+                            scrollToTopBtn.classList.remove('opacity-100', 'visible');
+                            scrollToTopBtn.classList.add('opacity-0', 'invisible');
+                        }
+                    };
+
+                    window.addEventListener('scroll', toggleVisibility);
+                    toggleVisibility();
+
+                    scrollToTopBtn.addEventListener('click', () => {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    });
+                }
+
+                // Real-time Statistics Heartbeat
+                const totalEl = document.getElementById('totalVisitorsCount');
+                const onlineEl = document.getElementById('onlineUsersCount');
+                if (totalEl && onlineEl) {
+                    let sessionId = localStorage.getItem('unidocs_session_id');
+                    if (!sessionId) {
+                        sessionId = 'sess_' + Math.random().toString(36).substr(2, 9);
+                        localStorage.setItem('unidocs_session_id', sessionId);
+                    }
+                    
+                    let newVisitor = false;
+                    if (!localStorage.getItem('unidocs_has_visited')) {
+                        newVisitor = true;
+                        localStorage.setItem('unidocs_has_visited', 'true');
+                    }
+
+                    const fetchStats = () => {
+                        fetch(`/api/stats/ping?sessionId=${sessionId}&newVisitor=${newVisitor}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                totalEl.textContent = data.total.toLocaleString('vi-VN');
+                                onlineEl.textContent = data.online.toLocaleString('vi-VN');
+                                newVisitor = false;
+                            })
+                            .catch(err => console.error('Failed to fetch stats', err));
+                    };
+
+                    fetchStats();
+                    setInterval(fetchStats, 15000);
+                }
+            });
+        </script>
+
+        <!-- Manual Modal -->
+        <div id="manualModal" class="fixed inset-0 z-[100] flex items-center justify-center hidden">
+            <div class="absolute inset-0 backdrop-blur-sm" style="background-color: rgba(0,0,0,0.5);" onclick="closeManualModal()"></div>
+            <div class="bg-white rounded-xl shadow-2xl z-10 w-full max-w-2xl p-6 transition-all duration-300" id="manualModalContent">
+                <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
+                    <h3 class="text-xl font-bold text-gray-900 lang-text" data-vi="Hướng dẫn sử dụng UniDocs" data-en="UniDocs User Guide">Hướng dẫn sử dụng UniDocs</h3>
+                    <button onclick="closeManualModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="space-y-4 max-h-[60vh] overflow-y-auto text-gray-600 text-sm leading-relaxed pr-2">
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                        <h4 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <span class="lang-text" data-vi="1. Tìm kiếm tài liệu" data-en="1. Search Documents">1. Tìm kiếm tài liệu</span>
+                        </h4>
+                        <p class="lang-text" data-vi="Sử dụng thanh tìm kiếm ở góc trên cùng để tìm nhanh học phần hoặc đề thi. Bạn cũng có thể duyệt qua danh sách các Trường Đại học ở trang chủ để tìm theo cấu trúc cây." data-en="Use the search bar at the top to quickly find courses or exams. You can also browse through the list of Universities on the homepage.">Sử dụng thanh tìm kiếm ở góc trên cùng để tìm nhanh học phần hoặc đề thi. Bạn cũng có thể duyệt qua danh sách các Trường Đại học ở trang chủ để tìm theo cấu trúc cây.</p>
+                    </div>
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+                        <h4 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                            <span class="lang-text" data-vi="2. Đóng góp & Tải xuống" data-en="2. Contribute & Download">2. Đóng góp & Tải xuống</span>
+                        </h4>
+                        <p class="lang-text" data-vi="Tại mỗi học phần, bạn có thể tải lên tài liệu mới để chia sẻ với cộng đồng. Các tài liệu đều có thể xem trước trực tiếp trên web trước khi quyết định tải về." data-en="At each course page, you can upload new documents to share with the community. All documents can be previewed directly on the web before downloading.">Tại mỗi học phần, bạn có thể tải lên tài liệu mới để chia sẻ với cộng đồng. Các tài liệu đều có thể xem trước trực tiếp trên web trước khi quyết định tải về.</p>
+                    </div>
+                    <div class="bg-orange-50 p-4 rounded-lg border border-orange-100">
+                        <h4 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span class="lang-text" data-vi="3. Tiện ích sinh viên" data-en="3. Student Utilities">3. Tiện ích sinh viên</span>
+                        </h4>
+                        <p class="lang-text" data-vi="UniDocs cung cấp nhiều công cụ mạnh mẽ: Phòng thi mô phỏng (giúp làm quen áp lực thời gian), Tạo thời khóa biểu (kéo thả và xuất PDF), và cập nhật thông báo liên tục từ nhà trường." data-en="UniDocs provides many powerful tools: Mock Exam Room (helps to get used to time pressure), Timetable Creator (drag and drop and export PDF), and continuous updates from the university.">UniDocs cung cấp nhiều công cụ mạnh mẽ: Phòng thi mô phỏng (giúp làm quen áp lực thời gian), Tạo thời khóa biểu (kéo thả và xuất PDF), và cập nhật thông báo liên tục từ nhà trường.</p>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <button onclick="closeManualModal()" class="w-full btn btn-primary py-2.5 font-medium lang-text" data-vi="Đã hiểu & Đóng" data-en="Understood & Close">Đã hiểu & Đóng</button>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+            // Dropdown toggle logic
+            const settingsBtn = document.getElementById('settingsBtn');
+            const settingsDropdown = document.getElementById('settingsDropdown');
+            
+            if (settingsBtn && settingsDropdown) {
+                settingsBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    settingsDropdown.classList.toggle('hidden');
+                });
+                
+                document.addEventListener('click', (e) => {
+                    if (!settingsBtn.contains(e.target) && !settingsDropdown.contains(e.target)) {
+                        settingsDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Language Toggle Logic (UI Only)
+            let currentLang = localStorage.getItem('unidocs_lang') || 'vi';
+            
+            function applyLanguage() {
+                const currentLangEl = document.getElementById('currentLang');
+                if (currentLangEl) currentLangEl.textContent = currentLang.toUpperCase();
+                
+                document.querySelectorAll('.lang-text').forEach(el => {
+                    if(el.dataset[currentLang]) {
+                        el.textContent = el.dataset[currentLang];
+                    }
+                });
+                const searchInput = document.getElementById('searchInput');
+                if(searchInput) searchInput.placeholder = currentLang === 'vi' ? "Tìm kiếm học phần, đề thi..." : "Search courses, exams...";
+            }
+
+            function toggleLanguage() {
+                currentLang = currentLang === 'vi' ? 'en' : 'vi';
+                localStorage.setItem('unidocs_lang', currentLang);
+                applyLanguage();
+                if (typeof Toastify !== 'undefined') {
+                    Toastify({
+                        text: currentLang === 'vi' ? "Đã chuyển sang Tiếng Việt" : "Switched to English",
+                        duration: 2000,
+                        gravity: "bottom", position: "right",
+                        style: { background: "#10b981" }
+                    }).showToast();
+                }
+            }
+
+            // Theme Toggle Logic
+            const themes = ['light', 'dark', 'system'];
+            let currentThemeIndex = 0; 
+            const savedTheme = localStorage.getItem('unidocs_theme');
+            if (savedTheme) {
+                currentThemeIndex = themes.indexOf(savedTheme) !== -1 ? themes.indexOf(savedTheme) : 0;
+            }
+
+            function applyTheme() {
+                const theme = themes[currentThemeIndex];
+                const themeNames = { 'vi': ['Sáng', 'Tối', 'Hệ thống'], 'en': ['Light', 'Dark', 'System'] };
+                const currentThemeEl = document.getElementById('currentTheme');
+                if (currentThemeEl) currentThemeEl.textContent = themeNames[currentLang][currentThemeIndex];
+                
+                if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.body.style.filter = 'invert(0.9) hue-rotate(180deg)';
+                    const styleId = 'dark-mode-overrides';
+                    if (!document.getElementById(styleId)) {
+                        const style = document.createElement('style');
+                        style.id = styleId;
+                        style.textContent = `img, svg, video, .card-image, #pdfViewer canvas { filter: invert(1) hue-rotate(180deg) !important; }`;
+                        document.head.appendChild(style);
+                    }
+                } else {
+                    document.body.style.filter = '';
+                    const style = document.getElementById('dark-mode-overrides');
+                    if (style) style.remove();
+                }
+            }
+
+            function cycleTheme() {
+                currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+                localStorage.setItem('unidocs_theme', themes[currentThemeIndex]);
+                applyTheme();
+            }
+
+            // Modal Logic
+            function showManualModal() {
+                if(settingsDropdown) settingsDropdown.classList.add('hidden');
+                const modal = document.getElementById('manualModal');
+                if(modal) modal.classList.remove('hidden');
+            }
+
+            function closeManualModal() {
+                const modal = document.getElementById('manualModal');
+                if(modal) modal.classList.add('hidden');
+            }
+
+            // Init
+            applyLanguage();
+            applyTheme();
+        </script>
+    </div>
+
+    <footer th:fragment="footer" class="bg-gray-100 border-t border-divider mt-12 py-8 relative">
+        <div class="container mx-auto px-4">
+            <div class="text-center text-sm text-gray-500 mb-6 max-w-5xl mx-auto leading-relaxed">
+                <strong class="font-semibold text-gray-700">Tuyên bố miễn trừ trách nhiệm:</strong> Tài liệu trên UniDocs do cộng đồng đóng góp vì mục đích học tập phi lợi nhuận. Chúng tôi không đưa ra bất kỳ bảo đảm nào về tính chính xác tuyệt đối của nội dung. Chúng tôi tôn trọng nghiêm ngặt quyền sở hữu trí tuệ theo pháp luật Việt Nam. Mọi yêu cầu gỡ bỏ tài liệu vi phạm bản quyền vui lòng liên hệ trực tiếp, chúng tôi cam kết kiểm tra và xử lý trong vòng 24 đến 48 giờ làm việc.
+            </div>
+
+            <div class="flex flex-col lg:flex-row justify-between items-center border-t border-gray-200 pt-6 gap-4 text-sm text-gray-600">
+                <div id="siteStats" class="flex items-center gap-4 text-xs font-medium text-gray-500">
+                    <div class="flex items-center gap-1.5" title="Tổng số lượt truy cập">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <span id="totalVisitorsCount" class="font-bold text-gray-700 mr-1">--</span> người truy cập
+                    </div>
+                    <div class="w-px h-3 bg-gray-300"></div>
+                    <div class="flex items-center gap-1.5" title="Người đang trực tuyến">
+                        <span class="relative flex h-2.5 w-2.5 mr-1">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                        </span>
+                        <span id="onlineUsersCount" class="font-bold text-green-600 mr-1">--</span> người đang trực tuyến
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <p>&copy; <script>document.write(new Date().getFullYear())</script> UniDocs. Nền tảng chia sẻ tài liệu học tập.</p>
+                    <div class="flex items-center justify-center gap-4 mt-2">
+                        <a th:href="@{/terms}" class="hover:text-primary transition-colors font-medium text-xs">Điều khoản sử dụng</a>
+                        <a th:href="@{/privacy}" class="hover:text-primary transition-colors font-medium text-xs">Chính sách bảo mật</a>
+                    </div>
+                </div>
+                
+                <!-- Spacer for right side balance if needed on desktop -->
+                <div class="hidden lg:block w-32"></div>
+            </div>
+        </div>
+
+        <button id="scrollToTopBtn" 
+                class="fixed bottom-8 right-8 z-50 bg-primary text-white p-3 rounded-full shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-primary-dark hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                aria-label="Cuộn lên đầu trang">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
+            </svg>
+        </button>
+    </footer>
+    <!-- Manual Modal and Scripts are now inside the scripts fragment -->
+</body>
+</html>

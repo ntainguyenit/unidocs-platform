@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased text-text bg-white;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-text font-bold;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-dark text-white font-semibold py-2 px-4 rounded transition-colors duration-200;
+  }
+  
+  .card {
+    @apply bg-white rounded-lg shadow-sm border border-divider p-4;
+  }
+  
+  .tooltip {
+    @apply invisible absolute z-50 p-2 text-sm text-white bg-gray-900 rounded opacity-0 transition-opacity duration-300 group-hover:visible group-hover:opacity-100;
+  }
+}

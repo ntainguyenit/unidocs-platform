@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Đăng nhập - UniDocs')}"></head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    
+    <header th:replace="~{fragments/base :: navbar}"></header>
+
+    <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-md w-full space-y-8 card">
+            <div>
+                <h2 class="mt-2 text-center text-3xl font-bold text-gray-900">
+                    Đăng nhập hệ thống
+                </h2>
+                <p class="mt-2 text-center text-sm text-gray-500">
+                    Sử dụng tài khoản Admin để quản lý tài liệu
+                </p>
+            </div>
+            
+            <form class="mt-8 space-y-6" th:action="@{/login}" method="POST">
+                
+                <div th:if="${param.error}" class="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+                    <p class="text-sm text-red-700">Tên đăng nhập hoặc mật khẩu không chính xác!</p>
+                </div>
+
+                <div th:if="${param.logout}" class="bg-green-50 border-l-4 border-green-500 p-4 mb-4">
+                    <p class="text-sm text-green-700">Bạn đã đăng xuất thành công.</p>
+                </div>
+
+                <div class="rounded-md space-y-4">
+                    <div>
+                        <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Tên đăng nhập</label>
+                        <input id="username" name="username" type="text" required 
+                               class="appearance-none rounded-md relative block w-full px-3 py-2 border border-divider placeholder-gray-400 text-text focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent sm:text-sm transition-all" 
+                               placeholder="Nhập tên đăng nhập">
+                    </div>
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                        <input id="password" name="password" type="password" required 
+                               class="appearance-none rounded-md relative block w-full px-3 py-2 border border-divider placeholder-gray-400 text-text focus:outline-none focus:ring-2 focus:ring-blue-300 focus:border-transparent sm:text-sm transition-all" 
+                               placeholder="Nhập mật khẩu">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="w-full flex justify-center btn-primary">
+                        Đăng nhập
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments/base :: footer}"></footer>
+    <div th:replace="~{fragments/base :: scripts}"></div>
+
+</body>
+</html>
