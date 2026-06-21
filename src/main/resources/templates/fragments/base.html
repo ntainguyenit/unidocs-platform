@@ -11,7 +11,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        body.dark-mode { background-color: #111827; color: #f9fafb; }
+        body.dark-mode .bg-white { background-color: #1f2937; border-color: #374151; color: #f9fafb; }
+        body.dark-mode .text-gray-900, body.dark-mode .text-gray-800 { color: #f9fafb; }
+        body.dark-mode .text-gray-700, body.dark-mode .text-gray-600 { color: #d1d5db; }
+        body.dark-mode .text-gray-500 { color: #9ca3af; }
+        body.dark-mode .bg-gray-50, body.dark-mode .bg-gray-100 { background-color: #374151; }
+        body.dark-mode .border-gray-200, body.dark-mode .border-divider, body.dark-mode .border-gray-100 { border-color: #374151; }
+        body.dark-mode header.bg-primary { background-color: #1e3a8a; }
+        body.dark-mode .shadow-sm, body.dark-mode .shadow-md, body.dark-mode .shadow-xl { box-shadow: none; border: 1px solid #374151; }
     </style>
 </head>
 <body>
@@ -48,19 +57,10 @@
                         </div>
                         <ul class="py-2" aria-labelledby="settingsBtn">
                             <li>
-                                <div class="px-4 py-2 hover:bg-gray-50 flex items-center justify-between cursor-pointer" onclick="toggleLanguage()">
-                                    <div class="flex items-center gap-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>
-                                        <span class="lang-text" data-vi="Ngôn ngữ" data-en="Language">Ngôn ngữ</span>
-                                    </div>
-                                    <span id="currentLang" class="text-xs font-bold bg-blue-100 text-primary px-2 py-0.5 rounded">VI</span>
-                                </div>
-                            </li>
-                            <li>
                                 <div class="px-4 py-2 hover:bg-gray-50 flex items-center justify-between cursor-pointer" onclick="cycleTheme()">
                                     <div class="flex items-center gap-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
-                                        <span class="lang-text" data-vi="Giao diện" data-en="Theme">Giao diện</span>
+                                        <span>Giao diện</span>
                                     </div>
                                     <span id="currentTheme" class="text-xs font-medium text-gray-500">Sáng</span>
                                 </div>
@@ -68,16 +68,7 @@
                             <li>
                                 <a href="#" onclick="showManualModal(); return false;" class="block px-4 py-2 hover:bg-gray-50 flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                    <span class="lang-text" data-vi="Hướng dẫn sử dụng" data-en="User Guide">Hướng dẫn sử dụng</span>
-                                </a>
-                            </li>
-                        </ul>
-                        <div class="border-t border-gray-100 py-2">
-                            <a href="/admin/login" class="block px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-primary font-medium">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" /></svg>
-                                <span class="lang-text" data-vi="Đăng nhập (Admin)" data-en="Login (Admin)">Đăng nhập (Admin)</span>
-                            </a>
-                        </div>
+                        <!-- Admin Login Removed -->
                     </div>
                 </div>
             </div>
@@ -387,36 +378,6 @@
                 });
             }
 
-            // Language Toggle Logic (UI Only)
-            let currentLang = localStorage.getItem('unidocs_lang') || 'vi';
-            
-            function applyLanguage() {
-                const currentLangEl = document.getElementById('currentLang');
-                if (currentLangEl) currentLangEl.textContent = currentLang.toUpperCase();
-                
-                document.querySelectorAll('.lang-text').forEach(el => {
-                    if(el.dataset[currentLang]) {
-                        el.textContent = el.dataset[currentLang];
-                    }
-                });
-                const searchInput = document.getElementById('searchInput');
-                if(searchInput) searchInput.placeholder = currentLang === 'vi' ? "Tìm kiếm học phần, đề thi..." : "Search courses, exams...";
-            }
-
-            function toggleLanguage() {
-                currentLang = currentLang === 'vi' ? 'en' : 'vi';
-                localStorage.setItem('unidocs_lang', currentLang);
-                applyLanguage();
-                if (typeof Toastify !== 'undefined') {
-                    Toastify({
-                        text: currentLang === 'vi' ? "Đã chuyển sang Tiếng Việt" : "Switched to English",
-                        duration: 2000,
-                        gravity: "bottom", position: "right",
-                        style: { background: "#10b981" }
-                    }).showToast();
-                }
-            }
-
             // Theme Toggle Logic
             const themes = ['light', 'dark', 'system'];
             let currentThemeIndex = 0; 
@@ -427,23 +388,16 @@
 
             function applyTheme() {
                 const theme = themes[currentThemeIndex];
-                const themeNames = { 'vi': ['Sáng', 'Tối', 'Hệ thống'], 'en': ['Light', 'Dark', 'System'] };
+                const themeNames = ['Sáng', 'Tối', 'Hệ thống'];
                 const currentThemeEl = document.getElementById('currentTheme');
-                if (currentThemeEl) currentThemeEl.textContent = themeNames[currentLang][currentThemeIndex];
+                if (currentThemeEl) currentThemeEl.textContent = themeNames[currentThemeIndex];
                 
-                if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                    document.body.style.filter = 'invert(0.9) hue-rotate(180deg)';
-                    const styleId = 'dark-mode-overrides';
-                    if (!document.getElementById(styleId)) {
-                        const style = document.createElement('style');
-                        style.id = styleId;
-                        style.textContent = `img, svg, video, .card-image, #pdfViewer canvas { filter: invert(1) hue-rotate(180deg) !important; }`;
-                        document.head.appendChild(style);
-                    }
+                // Determine actual theme
+                const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+                if (isDark) {
+                    document.body.classList.add('dark-mode');
                 } else {
-                    document.body.style.filter = '';
-                    const style = document.getElementById('dark-mode-overrides');
-                    if (style) style.remove();
+                    document.body.classList.remove('dark-mode');
                 }
             }
 

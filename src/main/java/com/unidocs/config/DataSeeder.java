@@ -66,7 +66,7 @@ public class DataSeeder implements CommandLineRunner {
         List<University> existingUnis = universityRepository.findAll();
 
         University husc = getOrCreateUniversity(existingUnis, "Trường Đại học Khoa học", "HUSC", "Trường ĐHKH, Đại học Huế", "https://www.google.com/s2/favicons?domain=husc.edu.vn&sz=128", "bg-blue-600");
-        University hul = getOrCreateUniversity(existingUnis, "Trường Đại học Luật", "HUL", "Trường ĐHL, Đại học Huế", "https://www.google.com/s2/favicons?domain=hul.edu.vn&sz=128", "bg-rose-600");
+        // HUL creation removed
 
         List<Faculty> existingFaculties = facultyRepository.findAll();
         List<Course> existingCourses = courseRepository.findAll();
@@ -265,9 +265,7 @@ public class DataSeeder implements CommandLineRunner {
             List<String> subjects = (List<String>) item.get("subjects");
 
             University targetUni = husc;
-            if (facultyName.equalsIgnoreCase("Trường Đại học Luật")) {
-                targetUni = hul;
-            }
+            // HUL assignment removed
 
             Faculty faculty = getOrCreateFaculty(existingFaculties, facultyName, SlugUtils.toSlug(facultyName), targetUni);
 
