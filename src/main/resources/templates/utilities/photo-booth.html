@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/base :: head('Bốt chụp ảnh (Photo Booth) | UniDocs')}"></div>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .filter-none { filter: none; }
+        .filter-grayscale { filter: grayscale(100%); }
+        .filter-sepia { filter: sepia(100%); }
+        .filter-invert { filter: invert(100%); }
+        .filter-blur { filter: blur(4px); }
+        .filter-contrast { filter: contrast(150%); }
+        .filter-hue { filter: hue-rotate(90deg); }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen text-text">
+    
+    <div th:replace="~{fragments/base :: navbar}"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a th:href="@{/}" class="hover:text-primary transition-colors flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+                        Trang chủ
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                        <span class="ml-1 md:ml-2 text-text font-medium">Bốt chụp ảnh</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Bốt chụp ảnh (Photo Booth)</h1>
+            <p class="text-gray-500 mt-2">Chụp ảnh trực tiếp với các bộ lọc màu, khung viền và nhãn dán vui nhộn.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Sidebar Controls -->
+            <div class="lg:col-span-1 space-y-6 bg-white p-6 rounded-xl shadow-sm border border-gray-100 h-fit">
+                
+                <button id="startCameraBtn" class="w-full bg-blue-100 text-blue-700 hover:bg-blue-200 font-bold py-2.5 px-4 rounded-lg transition-colors flex justify-center items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 5a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V7a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 3H8.828a2 2 0 00-1.414.586L6.293 4.707A1 1 0 015.586 5H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
+                    </svg>
+                    Bật Camera
+                </button>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Bộ lọc màu (Filters)</label>
+                    <select id="filterSelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">
+                        <option value="none">Bình thường</option>
+                        <option value="grayscale">Đen trắng (Grayscale)</option>
+                        <option value="sepia">Cổ điển (Sepia)</option>
+                        <option value="invert">Âm bản (Invert)</option>
+                        <option value="blur">Làm mờ (Blur)</option>
+                        <option value="contrast">Tương phản cao</option>
+                        <option value="hue">Đổi tông màu (Hue)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Khung viền & Hiệu ứng</label>
+                    <select id="frameSelect" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5">
+                        <option value="none">Không có</option>
+                        <option value="polaroid">Khung Polaroid</option>
+                        <option value="film">Khung Cuộn phim</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Nhãn dán (Sticker)</label>
+                    <div class="flex gap-2 flex-wrap" id="stickerSelectors">
+                        <button class="sticker-btn text-2xl p-2 border rounded hover:bg-gray-100 border-gray-800" data-sticker="">🚫</button>
+                        <button class="sticker-btn text-2xl p-2 border rounded hover:bg-gray-100" data-sticker="🕶️">🕶️</button>
+                        <button class="sticker-btn text-2xl p-2 border rounded hover:bg-gray-100" data-sticker="👑">👑</button>
+                        <button class="sticker-btn text-2xl p-2 border rounded hover:bg-gray-100" data-sticker="✨">✨</button>
+                        <button class="sticker-btn text-2xl p-2 border rounded hover:bg-gray-100" data-sticker="🎉">🎉</button>
+                    </div>
+                </div>
+
+                <button id="captureBtn" disabled class="w-full bg-primary hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors flex justify-center items-center gap-2 opacity-50 cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Chụp Ngay!
+                </button>
+            </div>
+
+            <!-- Preview Area -->
+            <div class="lg:col-span-3 space-y-6">
+                <!-- Camera Feed -->
+                <div class="bg-black rounded-xl overflow-hidden shadow-sm flex items-center justify-center relative min-h-[400px]">
+                    <video id="videoElement" autoplay playsinline class="w-full h-auto hidden"></video>
+                    <div id="cameraPlaceholder" class="text-gray-400 flex flex-col items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-2 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                        <p>Vui lòng bật Camera</p>
+                    </div>
+                </div>
+
+                <!-- Captured Result -->
+                <div id="resultContainer" class="hidden bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center">
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 w-full border-b pb-2">Ảnh đã chụp</h3>
+                    <canvas id="photoCanvas" class="max-w-full h-auto shadow-md rounded border border-gray-200"></canvas>
+                    
+                    <button id="downloadBtn" class="mt-6 bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 px-6 rounded-lg transition-colors flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        Tải ảnh này
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+    <div th:replace="~{fragments/base :: scripts}"></div>
+
+    <script>
+        const video = document.getElementById('videoElement');
+        const canvas = document.getElementById('photoCanvas');
+        const ctx = canvas.getContext('2d');
+        const startCameraBtn = document.getElementById('startCameraBtn');
+        const captureBtn = document.getElementById('captureBtn');
+        const filterSelect = document.getElementById('filterSelect');
+        const frameSelect = document.getElementById('frameSelect');
+        const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+        const resultContainer = document.getElementById('resultContainer');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const stickerBtns = document.querySelectorAll('.sticker-btn');
+
+        let currentStream = null;
+        let currentSticker = "";
+
+        startCameraBtn.addEventListener('click', async () => {
+            try {
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                }
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                currentStream = stream;
+                video.srcObject = stream;
+                video.classList.remove('hidden');
+                cameraPlaceholder.classList.add('hidden');
+                
+                captureBtn.disabled = false;
+                captureBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                startCameraBtn.innerHTML = 'Khởi động lại Camera';
+            } catch (err) {
+                alert("Không thể truy cập Camera. Vui lòng kiểm tra quyền trình duyệt!");
+                console.error(err);
+            }
+        });
+
+        filterSelect.addEventListener('change', (e) => {
+            video.className = `w-full h-auto filter-${e.target.value}`;
+        });
+
+        stickerBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                stickerBtns.forEach(b => b.classList.replace('border-gray-800', 'border-transparent'));
+                e.target.classList.replace('border-transparent', 'border-gray-800');
+                currentSticker = e.target.getAttribute('data-sticker');
+            });
+        });
+
+        captureBtn.addEventListener('click', () => {
+            if (!currentStream) return;
+
+            // set canvas size to video size
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Apply filter to context
+            const filter = filterSelect.value;
+            let filterString = "none";
+            switch(filter) {
+                case "grayscale": filterString = "grayscale(100%)"; break;
+                case "sepia": filterString = "sepia(100%)"; break;
+                case "invert": filterString = "invert(100%)"; break;
+                case "blur": filterString = "blur(4px)"; break;
+                case "contrast": filterString = "contrast(150%)"; break;
+                case "hue": filterString = "hue-rotate(90deg)"; break;
+            }
+            ctx.filter = filterString;
+
+            // Draw video frame
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Reset filter for UI overlays
+            ctx.filter = "none";
+
+            // Draw Frame
+            const frame = frameSelect.value;
+            if (frame === "polaroid") {
+                ctx.fillStyle = "white";
+                // Top, Left, Right borders
+                ctx.fillRect(0, 0, canvas.width, 20);
+                ctx.fillRect(0, 0, 20, canvas.height);
+                ctx.fillRect(canvas.width - 20, 0, 20, canvas.height);
+                // Bottom thick border
+                ctx.fillRect(0, canvas.height - 80, canvas.width, 80);
+                
+                ctx.fillStyle = "black";
+                ctx.font = "bold 24px 'Comic Sans MS', cursive, sans-serif";
+                ctx.textAlign = "center";
+                ctx.fillText("Kỷ niệm UniDocs", canvas.width/2, canvas.height - 35);
+            } else if (frame === "film") {
+                ctx.fillStyle = "#111";
+                ctx.fillRect(0, 0, canvas.width, 30);
+                ctx.fillRect(0, canvas.height - 30, canvas.width, 30);
+                ctx.fillStyle = "white";
+                for(let i=10; i<canvas.width; i+=40) {
+                    ctx.fillRect(i, 5, 20, 20);
+                    ctx.fillRect(i, canvas.height - 25, 20, 20);
+                }
+            }
+
+            // Draw Sticker
+            if (currentSticker) {
+                ctx.font = "100px Arial";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                ctx.fillText(currentSticker, canvas.width/2, canvas.height/2);
+            }
+
+            resultContainer.classList.remove('hidden');
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'unidocs-photo.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    </script>
+</body>
+</html>

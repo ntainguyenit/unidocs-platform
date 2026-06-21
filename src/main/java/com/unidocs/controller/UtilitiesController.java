@@ -18,4 +18,44 @@ public class UtilitiesController {
     public String timetable(Model model) {
         return "utilities/timetable";
     }
+
+    @GetMapping("/screenshot-beautifier")
+    public String screenshotBeautifier() {
+        return "utilities/screenshot-beautifier";
+    }
+
+    @GetMapping("/photo-booth")
+    public String photoBooth() {
+        return "utilities/photo-booth";
+    }
+
+    @GetMapping("/typing-test")
+    public String typingTest() {
+        return "utilities/typing-test";
+    }
+
+    @GetMapping("/lucky-wheel")
+    public String luckyWheel() {
+        return "utilities/lucky-wheel";
+    }
+
+    @GetMapping("/bmi-calculator")
+    public String bmiCalculator() {
+        return "utilities/bmi-calculator";
+    }
+
+    @GetMapping("/currency-converter")
+    public String currencyConverter() {
+        return "utilities/currency-converter";
+    }
+
+    @GetMapping("/random-number")
+    public String randomNumber() {
+        return "utilities/random-number";
+    }
+
+    @GetMapping("/stopwatch")
+    public String stopwatch() {
+        return "utilities/stopwatch";
+    }
 }

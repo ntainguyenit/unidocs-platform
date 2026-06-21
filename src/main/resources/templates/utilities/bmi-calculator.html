@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/base :: head('Máy tính BMI | UniDocs')}"></div>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bmi-marker {
+            transition: left 0.5s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen text-text">
+    
+    <div th:replace="~{fragments/base :: navbar}"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-3xl">
+        <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a th:href="@{/}" class="hover:text-primary transition-colors flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+                        Trang chủ
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                        <span class="ml-1 md:ml-2 text-text font-medium">Máy tính BMI</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-gray-900">Tính chỉ số khối cơ thể (BMI)</h1>
+            <p class="text-gray-500 mt-2">Kiểm tra mức độ cân đối của cơ thể bạn dựa trên cân nặng và chiều cao.</p>
+        </div>
+
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Inputs -->
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Chiều cao (cm)</label>
+                        <input type="number" id="heightInput" placeholder="VD: 170" class="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-primary focus:border-primary block w-full p-3">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Cân nặng (kg)</label>
+                        <input type="number" id="weightInput" placeholder="VD: 65" class="bg-gray-50 border border-gray-300 text-gray-900 text-lg rounded-lg focus:ring-primary focus:border-primary block w-full p-3">
+                    </div>
+                    
+                    <button onclick="calculateBMI()" class="w-full bg-primary hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-xl transition-colors">
+                        Tính BMI
+                    </button>
+                </div>
+
+                <!-- Results -->
+                <div class="bg-blue-50/50 rounded-xl p-6 flex flex-col justify-center items-center text-center border border-blue-100">
+                    <div class="text-gray-500 font-medium mb-2">Chỉ số BMI của bạn</div>
+                    <div id="bmiValue" class="text-6xl font-black text-gray-900 mb-2">--</div>
+                    <div id="bmiCategory" class="text-xl font-bold text-gray-400 mb-4">Chưa có kết quả</div>
+                    <p id="bmiAdvice" class="text-sm text-gray-600">Hãy nhập chiều cao và cân nặng để xem bạn đang ở mức thể trạng nào nhé.</p>
+                </div>
+            </div>
+
+            <!-- BMI Scale -->
+            <div class="mt-10 relative pt-8 hidden" id="bmiScaleContainer">
+                <div class="flex h-4 rounded-full overflow-hidden">
+                    <div class="bg-blue-400 w-1/4" title="Thiếu cân (Dưới 18.5)"></div>
+                    <div class="bg-green-400 w-1/4" title="Bình thường (18.5 - 24.9)"></div>
+                    <div class="bg-yellow-400 w-1/4" title="Thừa cân (25 - 29.9)"></div>
+                    <div class="bg-red-500 w-1/4" title="Béo phì (Từ 30 trở lên)"></div>
+                </div>
+                <!-- Marker -->
+                <div id="bmiMarker" class="bmi-marker absolute top-2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[10px] border-t-gray-900 -ml-2" style="left: 0%;"></div>
+                
+                <div class="flex justify-between text-xs text-gray-500 mt-2 px-1">
+                    <span>15</span>
+                    <span>18.5</span>
+                    <span>25</span>
+                    <span>30</span>
+                    <span>40+</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+    <div th:replace="~{fragments/base :: scripts}"></div>
+
+    <script>
+        const heightInput = document.getElementById('heightInput');
+        const weightInput = document.getElementById('weightInput');
+        const bmiValue = document.getElementById('bmiValue');
+        const bmiCategory = document.getElementById('bmiCategory');
+        const bmiAdvice = document.getElementById('bmiAdvice');
+        const bmiScaleContainer = document.getElementById('bmiScaleContainer');
+        const bmiMarker = document.getElementById('bmiMarker');
+
+        function calculateBMI() {
+            const h = parseFloat(heightInput.value);
+            const w = parseFloat(weightInput.value);
+
+            if (!h || !w || h <= 0 || w <= 0) {
+                alert("Vui lòng nhập chiều cao và cân nặng hợp lệ.");
+                return;
+            }
+
+            // BMI = W(kg) / (H(m) * H(m))
+            const hm = h / 100;
+            const bmi = w / (hm * hm);
+            const roundedBMI = Math.round(bmi * 10) / 10;
+
+            bmiValue.innerText = roundedBMI;
+            bmiScaleContainer.classList.remove('hidden');
+
+            let category = "";
+            let colorClass = "";
+            let advice = "";
+            let percentage = 0; // mapping 15-40 to 0%-100%
+
+            if (bmi < 18.5) {
+                category = "Thiếu cân";
+                colorClass = "text-blue-500";
+                advice = "Bạn đang hơi gầy. Cần bổ sung thêm dinh dưỡng và tập thể dục nhẹ nhàng để tăng cơ.";
+                percentage = ((bmi - 15) / (18.5 - 15)) * 25; // First 25% zone
+            } else if (bmi >= 18.5 && bmi < 25) {
+                category = "Bình thường";
+                colorClass = "text-green-500";
+                advice = "Tuyệt vời! Cơ thể bạn đang ở trạng thái rất cân đối. Hãy tiếp tục duy trì lối sống lành mạnh nhé.";
+                percentage = 25 + ((bmi - 18.5) / (25 - 18.5)) * 25; // Second 25% zone
+            } else if (bmi >= 25 && bmi < 30) {
+                category = "Thừa cân";
+                colorClass = "text-yellow-500";
+                advice = "Bạn đang có dấu hiệu thừa cân. Hãy chú ý giảm bớt đồ ngọt, tinh bột và tăng cường vận động.";
+                percentage = 50 + ((bmi - 25) / (30 - 25)) * 25; // Third 25% zone
+            } else {
+                category = "Béo phì";
+                colorClass = "text-red-500";
+                advice = "Cảnh báo! Thể trạng béo phì có thể dẫn đến nhiều vấn đề sức khỏe. Nên tham khảo ý kiến bác sĩ để có chế độ giảm cân phù hợp.";
+                percentage = 75 + ((bmi - 30) / (40 - 30)) * 25; // Fourth 25% zone
+            }
+
+            // Clamp percentage
+            if (percentage < 0) percentage = 0;
+            if (percentage > 100) percentage = 100;
+
+            bmiCategory.innerText = category;
+            bmiCategory.className = `text-xl font-bold mb-4 ${colorClass}`;
+            bmiAdvice.innerText = advice;
+            bmiMarker.style.left = `${percentage}%`;
+        }
+
+        // Allow Enter key to calculate
+        [heightInput, weightInput].forEach(el => {
+            el.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    calculateBMI();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

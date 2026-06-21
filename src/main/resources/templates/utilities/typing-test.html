@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/base :: head('Kiểm tra tốc độ gõ (Typing Test) | UniDocs')}"></div>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .char {
+            color: #9ca3af; /* text-gray-400 */
+            transition: color 0.1s;
+        }
+        .char.correct { color: #10b981; } /* text-green-500 */
+        .char.incorrect { color: #ef4444; background: #fee2e2; border-radius: 2px; } /* text-red-500 */
+        .char.current { border-bottom: 2px solid #3b82f6; color: #1f2937; } /* current cursor */
+        
+        #textDisplay {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.5rem;
+            line-height: 2.2rem;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen text-text">
+    
+    <div th:replace="~{fragments/base :: navbar}"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-4xl">
+        <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a th:href="@{/}" class="hover:text-primary transition-colors flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+                        Trang chủ
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                        <span class="ml-1 md:ml-2 text-text font-medium">Kiểm tra tốc độ gõ</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-gray-900">Kiểm tra tốc độ gõ</h1>
+            <p class="text-gray-500 mt-2">Đo tốc độ gõ phím của bạn (WPM) và độ chính xác trong 60 giây.</p>
+        </div>
+
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative">
+            
+            <!-- Stats Header -->
+            <div class="flex justify-between items-center mb-6 text-lg font-bold text-gray-700">
+                <div class="flex gap-8">
+                    <div>Tốc độ: <span id="wpmDisplay" class="text-primary text-2xl">0</span> WPM</div>
+                    <div>Chính xác: <span id="accuracyDisplay" class="text-green-500 text-2xl">100</span>%</div>
+                </div>
+                <div class="text-2xl flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span id="timeDisplay" class="text-gray-900">60</span>s
+                </div>
+            </div>
+
+            <!-- Typing Area -->
+            <div id="textDisplay" class="mb-8 focus:outline-none" tabindex="0">
+                Bấm vào đây và bắt đầu gõ để kiểm tra tốc độ...
+            </div>
+
+            <!-- Try Again Button -->
+            <div class="text-center">
+                <button id="restartBtn" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2 px-6 rounded-full transition-colors flex items-center gap-2 mx-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clip-rule="evenodd" />
+                    </svg>
+                    Bắt đầu lại (Tab + Enter)
+                </button>
+            </div>
+            
+            <!-- Overlay Result -->
+            <div id="resultOverlay" class="absolute inset-0 bg-white/95 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center hidden z-10">
+                <h2 class="text-4xl font-bold text-gray-900 mb-2">Hết giờ!</h2>
+                <p class="text-gray-500 mb-8">Kết quả của bạn:</p>
+                
+                <div class="flex gap-12 text-center mb-8">
+                    <div>
+                        <div class="text-6xl font-black text-primary mb-2" id="finalWpm">0</div>
+                        <div class="text-gray-500 uppercase font-bold tracking-widest text-sm">WPM</div>
+                    </div>
+                    <div>
+                        <div class="text-6xl font-black text-green-500 mb-2" id="finalAcc">0%</div>
+                        <div class="text-gray-500 uppercase font-bold tracking-widest text-sm">Độ chính xác</div>
+                    </div>
+                </div>
+
+                <button onclick="initTest()" class="bg-primary hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition-colors shadow-lg">
+                    Thử lại ngay
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+    <div th:replace="~{fragments/base :: scripts}"></div>
+
+    <script>
+        const paragraphs = [
+            "Công nghệ thông tin là một ngành học cực kỳ năng động và phát triển với tốc độ chóng mặt. Những người theo đuổi lĩnh vực này cần phải không ngừng học hỏi, cập nhật các kiến thức mới về ngôn ngữ lập trình, hệ quản trị cơ sở dữ liệu và trí tuệ nhân tạo. Việc gõ phím nhanh là một kỹ năng cơ bản và vô cùng cần thiết đối với mỗi lập trình viên.",
+            "Trường Đại học Khoa học, Đại học Huế là một trong những trung tâm đào tạo và nghiên cứu khoa học lớn của miền Trung. Sinh viên tại đây luôn được tạo điều kiện tốt nhất để phát huy khả năng sáng tạo và học tập. Khả năng làm việc nhóm và giao tiếp cũng là những kỹ năng mềm quan trọng giúp các bạn tiến xa hơn trên con đường sự nghiệp.",
+            "Ngày nay, việc sở hữu một chiếc máy tính cá nhân kết nối Internet đã mở ra vô vàn cơ hội học tập. Khắp nơi trên thế giới, hàng triệu dòng mã được viết ra mỗi ngày để xây dựng những phần mềm, ứng dụng giúp cuộc sống trở nên tiện lợi hơn. Bạn có bao giờ tự hỏi làm cách nào để gõ phím nhanh mà không cần nhìn bàn phím chưa?",
+            "Lập trình viên không chỉ là những người viết ra mã máy, mà họ còn là những nghệ sĩ thực thụ. Bằng cách sắp xếp các câu lệnh logic, họ biến những ý tưởng vô hình thành những sản phẩm hữu hình hiện diện trên mọi thiết bị. Thật thú vị khi có thể giao tiếp với máy tính và bắt chúng thực hiện chính xác những gì mình muốn."
+        ];
+
+        let timeLimit = 60;
+        let timeLeft;
+        let timer;
+        let isPlaying = false;
+        let charIndex = 0;
+        let mistakes = 0;
+        let isTestFinished = false;
+
+        const textDisplay = document.getElementById('textDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const wpmDisplay = document.getElementById('wpmDisplay');
+        const accuracyDisplay = document.getElementById('accuracyDisplay');
+        const restartBtn = document.getElementById('restartBtn');
+        const resultOverlay = document.getElementById('resultOverlay');
+        const finalWpm = document.getElementById('finalWpm');
+        const finalAcc = document.getElementById('finalAcc');
+
+        function loadParagraph() {
+            const ranIndex = Math.floor(Math.random() * paragraphs.length);
+            const text = paragraphs[ranIndex];
+            textDisplay.innerHTML = "";
+            text.split("").forEach(char => {
+                let span = `<span>${char}</span>`;
+                textDisplay.innerHTML += span;
+            });
+            textDisplay.querySelectorAll("span")[0].classList.add("current");
+        }
+
+        function initTest() {
+            loadParagraph();
+            clearInterval(timer);
+            timeLeft = timeLimit;
+            charIndex = 0;
+            mistakes = 0;
+            isPlaying = false;
+            isTestFinished = false;
+            timeDisplay.innerText = timeLeft;
+            wpmDisplay.innerText = 0;
+            accuracyDisplay.innerText = 100;
+            resultOverlay.classList.add('hidden');
+            textDisplay.focus();
+        }
+
+        function handleInput(e) {
+            if (isTestFinished) return;
+            
+            // Ignore modifiers
+            if(["Shift", "Control", "Alt", "Meta", "CapsLock", "Tab", "Escape"].includes(e.key)) return;
+
+            if (!isPlaying) {
+                timer = setInterval(updateTimer, 1000);
+                isPlaying = true;
+            }
+
+            const characters = textDisplay.querySelectorAll("span");
+            
+            if (e.key === "Backspace") {
+                if (charIndex > 0) {
+                    charIndex--;
+                    if (characters[charIndex].classList.contains("incorrect")) {
+                        mistakes--;
+                    }
+                    characters[charIndex].classList.remove("correct", "incorrect", "current");
+                    characters[charIndex].classList.add("current");
+                    if(charIndex + 1 < characters.length) {
+                        characters[charIndex + 1].classList.remove("current");
+                    }
+                }
+            } else {
+                if (charIndex < characters.length) {
+                    let typedChar = e.key;
+                    // handle special case if typedChar length > 1 but we only process valid chars
+                    if(typedChar.length !== 1) return;
+
+                    let expectedChar = characters[charIndex].innerText;
+                    
+                    if (typedChar === expectedChar) {
+                        characters[charIndex].classList.add("correct");
+                    } else {
+                        mistakes++;
+                        characters[charIndex].classList.add("incorrect");
+                    }
+                    characters[charIndex].classList.remove("current");
+                    charIndex++;
+                    if (charIndex < characters.length) {
+                        characters[charIndex].classList.add("current");
+                    } else {
+                        finishTest(); // Reached end of text
+                    }
+                }
+            }
+
+            // Real-time calculation
+            let wpm = Math.round((((charIndex - mistakes) / 5) / (timeLimit - timeLeft)) * 60);
+            wpm = wpm < 0 || !wpm || wpm === Infinity ? 0 : wpm;
+            
+            let accuracy = Math.round(((charIndex - mistakes) / charIndex) * 100);
+            accuracy = accuracy < 0 || !accuracy ? 100 : accuracy;
+
+            wpmDisplay.innerText = wpm;
+            accuracyDisplay.innerText = accuracy;
+        }
+
+        function updateTimer() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                timeDisplay.innerText = timeLeft;
+            } else {
+                finishTest();
+            }
+        }
+
+        function finishTest() {
+            clearInterval(timer);
+            isTestFinished = true;
+            
+            // Final calculation
+            let timeElapsed = timeLimit - timeLeft;
+            if(timeElapsed === 0) timeElapsed = 1;
+            
+            let wpm = Math.round((((charIndex - mistakes) / 5) / timeElapsed) * 60);
+            wpm = wpm < 0 || !wpm || wpm === Infinity ? 0 : wpm;
+            
+            let accuracy = Math.round(((charIndex - mistakes) / charIndex) * 100);
+            accuracy = accuracy < 0 || !accuracy ? 0 : accuracy;
+
+            finalWpm.innerText = wpm;
+            finalAcc.innerText = accuracy + "%";
+            resultOverlay.classList.remove('hidden');
+        }
+
+        textDisplay.addEventListener("keydown", handleInput);
+        restartBtn.addEventListener("click", initTest);
+        
+        // click textDisplay to focus
+        textDisplay.addEventListener("click", () => textDisplay.focus());
+
+        // Initialize on load
+        initTest();
+    </script>
+</body>
+</html>

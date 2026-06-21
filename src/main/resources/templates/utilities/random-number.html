@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/base :: head('Tạo số ngẫu nhiên | UniDocs')}"></div>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .slot-machine {
+            font-variant-numeric: tabular-nums;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen text-text">
+    
+    <div th:replace="~{fragments/base :: navbar}"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-2xl">
+        <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
+            <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                <li class="inline-flex items-center">
+                    <a th:href="@{/}" class="hover:text-primary transition-colors flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
+                        Trang chủ
+                    </a>
+                </li>
+                <li>
+                    <div class="flex items-center">
+                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                        <span class="ml-1 md:ml-2 text-text font-medium">Tạo số ngẫu nhiên</span>
+                    </div>
+                </li>
+            </ol>
+        </nav>
+
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-gray-900">Tạo số ngẫu nhiên</h1>
+            <p class="text-gray-500 mt-2">Quay số nhanh, chốt số lẹ. Phù hợp cho việc bốc thăm, chọn số thứ tự.</p>
+        </div>
+
+        <div class="bg-white p-8 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center">
+            
+            <div class="flex gap-4 w-full mb-8">
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Từ số (Min)</label>
+                    <input type="number" id="minInput" value="1" class="bg-gray-50 border border-gray-300 text-gray-900 text-2xl text-center rounded-lg focus:ring-primary focus:border-primary block w-full p-4 font-bold">
+                </div>
+                <div class="flex-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Đến số (Max)</label>
+                    <input type="number" id="maxInput" value="100" class="bg-gray-50 border border-gray-300 text-gray-900 text-2xl text-center rounded-lg focus:ring-primary focus:border-primary block w-full p-4 font-bold">
+                </div>
+            </div>
+
+            <div class="bg-gray-900 text-white w-full rounded-2xl py-12 flex justify-center items-center mb-8 shadow-inner relative overflow-hidden border-4 border-gray-800">
+                <!-- Highlight line -->
+                <div class="absolute inset-x-0 h-1/2 top-0 bg-white/5 pointer-events-none"></div>
+                
+                <div id="resultValue" class="text-8xl md:text-9xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-br from-yellow-300 to-yellow-600 slot-machine drop-shadow-lg">
+                    --
+                </div>
+            </div>
+
+            <button id="generateBtn" class="w-full max-w-sm bg-primary hover:bg-blue-700 text-white text-xl font-bold py-4 px-8 rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 active:translate-y-0 uppercase tracking-wider">
+                Quay số
+            </button>
+            
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+    <div th:replace="~{fragments/base :: scripts}"></div>
+
+    <script>
+        const minInput = document.getElementById('minInput');
+        const maxInput = document.getElementById('maxInput');
+        const resultValue = document.getElementById('resultValue');
+        const generateBtn = document.getElementById('generateBtn');
+        
+        let isGenerating = false;
+
+        generateBtn.addEventListener('click', () => {
+            if (isGenerating) return;
+
+            const min = parseInt(minInput.value);
+            const max = parseInt(maxInput.value);
+
+            if (isNaN(min) || isNaN(max) || min >= max) {
+                alert("Vui lòng nhập Min nhỏ hơn Max.");
+                return;
+            }
+
+            isGenerating = true;
+            generateBtn.disabled = true;
+            generateBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            
+            // Slot machine effect
+            let duration = 1500; // 1.5s
+            let interval = 50; // updates every 50ms
+            let elapsed = 0;
+
+            const roll = setInterval(() => {
+                elapsed += interval;
+                
+                // Slow down effect
+                if (elapsed > duration * 0.7) {
+                    interval = 100;
+                }
+                if (elapsed > duration * 0.85) {
+                    interval = 200;
+                }
+
+                const randomTemp = Math.floor(Math.random() * (max - min + 1)) + min;
+                resultValue.innerText = randomTemp;
+
+                if (elapsed >= duration) {
+                    clearInterval(roll);
+                    // Final value
+                    const finalResult = Math.floor(Math.random() * (max - min + 1)) + min;
+                    resultValue.innerText = finalResult;
+                    
+                    // Add a tiny bump animation
+                    resultValue.classList.add('scale-110', 'text-yellow-200');
+                    setTimeout(() => {
+                        resultValue.classList.remove('scale-110', 'text-yellow-200');
+                    }, 200);
+
+                    isGenerating = false;
+                    generateBtn.disabled = false;
+                    generateBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }, interval);
+        });
+    </script>
+</body>
+</html>
