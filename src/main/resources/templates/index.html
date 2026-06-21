@@ -72,21 +72,12 @@
 
         <div class="mb-12">
             <div class="flex justify-between items-end mb-6 border-b border-divider pb-2">
-                <div class="flex items-center gap-2">
-                    <h2 class="text-2xl text-text">Các Trường đại học thành viên</h2>
-                    <div class="relative group" tabindex="0">
-                        <button type="button" class="text-gray-400 hover:text-primary transition-colors focus:outline-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </button>
-                        <!-- Tooltip -->
-                        <div class="absolute left-0 sm:left-1/2 sm:-translate-x-1/2 bottom-full mb-2 w-72 bg-gray-800 text-white text-xs rounded-lg py-3 px-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50 shadow-xl border border-gray-700">
-                            Bấm vào các thẻ Khoa &rarr; Học phần &rarr; Xem chi tiết hoặc Tải xuống – Có lỗi thì Báo cáo. Ngoài ra, đóng góp bằng cách Tải lên Tài liệu.
-                            <!-- Arrow -->
-                            <div class="absolute top-full left-4 sm:left-1/2 sm:-translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
-                        </div>
-                    </div>
+                <div class="flex items-center gap-3">
+                    <h2 class="text-2xl text-text">Trường đại học</h2>
+                    <a href="#" onclick="showManualModal(); return false;" class="text-gray-500 hover:text-primary transition-colors flex items-center gap-1 text-sm font-medium">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        Hướng dẫn sử dụng
+                    </a>
                 </div>
             </div>
             
@@ -447,20 +438,40 @@
     
     <div id="contentLoiTat" class="hidden">
         <p class="font-bold mb-4 text-lg">Danh sách các đường link truy cập nhanh:</p>
-        <ul class="space-y-3">
+        <ul class="space-y-3 mb-6">
             <li class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                <span class="font-medium">Trang thông tin đào tạo:</span> <a href="https://student.husc.edu.vn" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+                <span class="font-medium">Trường Đại học Khoa học:</span> <a href="https://husc.edu.vn/" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
             </li>
             <li class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                <span class="font-medium">Cổng thông tin Đại học Huế:</span> <a href="https://hueuni.edu.vn" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+                <span class="font-medium">Phòng Đạo tạo & Công tác sinh viên:</span> <a href="https://husc.edu.vn/daotao/" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
             </li>
             <li class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
-                <span class="font-medium">Website Trường Đại học Khoa học:</span> <a href="https://husc.edu.vn" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+                <span class="font-medium">Đăng nhập Sinh viên:</span> <a href="https://student.husc.edu.vn/Account/Login" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
             </li>
         </ul>
+        
+        <p class="font-bold mb-3 text-lg">Nền tảng:</p>
+        <ul class="space-y-3">
+            <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <div>
+                    <span class="font-medium">Nền tảng thi đối với các học phần Thi trên máy tính:</span> 
+                    <a href="http://exam.husc.edu.vn" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+                    <div class="text-sm text-gray-500 mt-1">(Lưu ý: web này chỉ hoạt động trong quá trình thi)</div>
+                </div>
+            </li>
+            <li class="flex items-start gap-2">
+                <svg class="w-5 h-5 text-blue-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <div>
+                    <span class="font-medium">Nền tảng nộp bài Tiểu luận:</span> 
+                    <a href="https://tieuluan.husc.edu.vn/" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+                </div>
+            </li>
+        </ul>
+
         <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
             <strong>Lưu ý pháp lý:</strong> UniDocs chỉ cung cấp tính năng chuyển tiếp đường dẫn nhằm hỗ trợ sinh viên truy cập nhanh. Chúng tôi hoàn toàn không chịu trách nhiệm về nội dung, tính khả dụng hoặc bảo mật của các trang web bên ngoài này. Vui lòng tự bảo vệ thông tin cá nhân của bạn khi truy cập vào các trang đó.
         </div>
