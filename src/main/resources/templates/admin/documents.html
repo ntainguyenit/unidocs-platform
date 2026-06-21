@@ -16,6 +16,8 @@
                     <nav class="hidden md:flex items-center gap-4">
                         <a th:href="@{/admin/documents}" class="text-sm text-white font-semibold border-b-2 border-white pb-1">Quản lý Tài liệu</a>
                         <a th:href="@{/admin/reports}" class="text-sm text-blue-100 hover:text-white transition-colors">Quản lý Báo cáo</a>
+                        <a th:href="@{/admin/duplicates}" class="text-sm text-blue-100 hover:text-white transition-colors">Trùng lặp</a>
+                        <a th:href="@{/admin/statistics}" class="text-sm text-blue-100 hover:text-white transition-colors">Thống kê</a>
                     </nav>
                 </div>
                 <div class="flex items-center gap-4">
@@ -88,12 +90,12 @@
                     </button>
                     <!-- Status and Sort Filter Form -->
                     <div class="text-sm flex gap-2">
-                        <select onchange="window.location.href='?status=' + this.value + '&sort=[[${currentSort}]]'" class="border border-gray-300 rounded p-1.5 text-sm focus:ring-primary focus:border-primary">
+                        <select id="statusFilter" class="border border-gray-300 rounded p-1.5 text-sm focus:ring-primary focus:border-primary">
                             <option value="">Tất cả trạng thái</option>
-                            <option value="PENDING" th:selected="${currentStatus == 'PENDING'}">Chờ duyệt</option>
-                            <option value="APPROVED" th:selected="${currentStatus == 'APPROVED'}">Đã duyệt</option>
+                            <option value="PENDING" th:selected="${currentStatus != null and currentStatus.name() == 'PENDING'}">Chờ duyệt</option>
+                            <option value="APPROVED" th:selected="${currentStatus != null and currentStatus.name() == 'APPROVED'}">Đã duyệt</option>
                         </select>
-                        <select onchange="window.location.href='?status=[[${currentStatus != null ? currentStatus : ''}]]&sort=' + this.value" class="border border-gray-300 rounded p-1.5 text-sm focus:ring-primary focus:border-primary">
+                        <select id="sortFilter" class="border border-gray-300 rounded p-1.5 text-sm focus:ring-primary focus:border-primary">
                             <option value="newest" th:selected="${currentSort == 'newest'}">Mới nhất</option>
                             <option value="oldest" th:selected="${currentSort == 'oldest'}">Cũ nhất</option>
                         </select>
@@ -162,7 +164,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <div class="flex justify-end gap-2">
-                                    <button type="button" th:onclick="'openRenameModal(' + ${doc.id} + ', \'' + ${#strings.escapeJavaScript(doc.title)} + '\')'" class="text-yellow-600 hover:text-yellow-900 bg-yellow-50 p-1.5 rounded" title="Đổi tên">
+                                    <button type="button" th:data-id="${doc.id}" th:data-title="${doc.title}" onclick="openRenameModal(this.getAttribute('data-id'), this.getAttribute('data-title'))" class="text-yellow-600 hover:text-yellow-900 bg-yellow-50 p-1.5 rounded" title="Đổi tên">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                     </button>
                                     <a th:href="${doc.storageUrl}" target="_blank" class="text-blue-600 hover:text-blue-900 bg-blue-50 p-1.5 rounded" title="Xem/Tải file trực tiếp">
@@ -251,7 +253,6 @@
                     </div>
                 </div>
             </div>
-            </div>
             </form>
         </div>
 
@@ -261,6 +262,19 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const statusFilter = document.getElementById('statusFilter');
+            const sortFilter = document.getElementById('sortFilter');
+            
+            function applyFilters() {
+                let url = '?';
+                if (statusFilter.value) url += 'status=' + encodeURIComponent(statusFilter.value) + '&';
+                if (sortFilter.value) url += 'sort=' + encodeURIComponent(sortFilter.value);
+                window.location.href = url;
+            }
+            
+            statusFilter.addEventListener('change', applyFilters);
+            sortFilter.addEventListener('change', applyFilters);
+
             const eventSource = new EventSource('/admin/api/notifications/stream');
             
             eventSource.addEventListener('report', (e) => {
