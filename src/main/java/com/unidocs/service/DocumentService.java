@@ -41,17 +41,25 @@ public class DocumentService {
         return documentRepository.findByCourseIdAndStatusOrderByUploadedAtDesc(courseId, DocumentStatus.APPROVED);
     }
 
-    public Page<Document> getAllDocumentsPaginated(int page, int size, String status) {
-        Pageable pageable = PageRequest.of(page, size);
+    public Page<Document> getAllDocumentsPaginated(int page, int size, String status, String sort) {
+        org.springframework.data.domain.Sort sorting = org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "reliabilityScore").and(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "uploadedAt"));
+        
+        if ("newest".equalsIgnoreCase(sort)) {
+            sorting = org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "uploadedAt");
+        } else if ("oldest".equalsIgnoreCase(sort)) {
+            sorting = org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.ASC, "uploadedAt");
+        }
+        
+        Pageable pageable = PageRequest.of(page, size, sorting);
         if (status != null && !status.isEmpty()) {
             try {
                 DocumentStatus docStatus = DocumentStatus.valueOf(status.toUpperCase());
-                return documentRepository.findByStatusOrderByReliabilityScoreDescUploadedAtDesc(docStatus, pageable);
+                return documentRepository.findByStatus(docStatus, pageable);
             } catch (IllegalArgumentException e) {
                 // Ignore invalid status
             }
         }
-        return documentRepository.findAllByOrderByReliabilityScoreDescUploadedAtDesc(pageable);
+        return documentRepository.findAll(pageable);
     }
 
     public List<Document> getAllDocuments() {
@@ -197,6 +205,28 @@ public class DocumentService {
             doc.setDownloads(doc.getDownloads() + 1);
             documentRepository.save(doc);
         }
+    }
+
+    @Transactional
+    public void renameDocument(Long id, String newName) {
+        Document doc = documentRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài liệu"));
+        
+        String trimmedName = newName.trim();
+        if (trimmedName.isEmpty()) {
+            throw new IllegalArgumentException("Tên tài liệu không được để trống");
+        }
+        
+        if (doc.getTitle().equals(trimmedName)) {
+            return;
+        }
+
+        if (documentRepository.existsByCourseIdAndTitle(doc.getCourse().getId(), trimmedName)) {
+            throw new IllegalArgumentException("Đã tồn tại tài liệu có tên '" + trimmedName + "' trong học phần này.");
+        }
+
+        doc.setTitle(trimmedName);
+        documentRepository.save(doc);
     }
 
     @Transactional

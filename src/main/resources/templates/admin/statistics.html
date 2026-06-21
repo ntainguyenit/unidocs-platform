@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Thống kê Hệ thống | Admin UniDocs')}"></head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    
+    <header class="bg-primary text-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <a th:href="@{/admin/documents}" class="flex items-center gap-2 text-xl font-bold tracking-tight text-white hover:text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        UniDocs Admin
+                    </a>
+                    <nav class="hidden md:flex items-center gap-4">
+                        <a th:href="@{/admin/documents}" class="text-sm text-blue-100 hover:text-white transition-colors">Quản lý Tài liệu</a>
+                        <a th:href="@{/admin/reports}" class="text-sm text-blue-100 hover:text-white transition-colors">Quản lý Báo cáo</a>
+                        <a th:href="@{/admin/duplicates}" class="text-sm text-blue-100 hover:text-white transition-colors">Trùng lặp</a>
+                        <a th:href="@{/admin/statistics}" class="text-sm text-white font-semibold border-b-2 border-white pb-1">Thống kê</a>
+                    </nav>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a th:href="@{/}" class="text-sm text-blue-100 hover:text-white transition-colors flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Về trang web
+                    </a>
+                    <form th:action="@{/admin/logout}" method="post" class="inline">
+                        <button type="submit" class="text-sm font-medium bg-red-600 hover:bg-red-700 text-white py-1.5 px-3 rounded transition-colors">Đăng xuất</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-900">Thống kê & Tổng quan Hệ thống</h1>
+            <div class="flex gap-2">
+                <a th:href="@{/admin/duplicates}" class="inline-flex items-center px-4 py-2 bg-yellow-100 text-yellow-800 font-medium rounded hover:bg-yellow-200 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    Dọn dẹp hệ thống
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-8">
+            <!-- Card 1 -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col items-center justify-center text-center">
+                <div class="w-12 h-12 inline-flex items-center justify-center rounded-full bg-blue-100 text-blue-500 mb-4">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                </div>
+                <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Tổng số Khoa</h2>
+                <p class="mt-2 text-3xl font-bold text-gray-900" th:text="${facultyCount}">0</p>
+            </div>
+            
+            <!-- Card 2 -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col items-center justify-center text-center">
+                <div class="w-12 h-12 inline-flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500 mb-4">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                </div>
+                <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Tổng số Học phần</h2>
+                <p class="mt-2 text-3xl font-bold text-gray-900" th:text="${courseCount}">0</p>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col items-center justify-center text-center">
+                <div class="w-12 h-12 inline-flex items-center justify-center rounded-full bg-green-100 text-green-500 mb-4">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                </div>
+                <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Tổng Tài liệu</h2>
+                <p class="mt-2 text-3xl font-bold text-gray-900" th:text="${documentCount}">0</p>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col items-center justify-center text-center">
+                <div class="w-12 h-12 inline-flex items-center justify-center rounded-full bg-red-100 text-red-500 mb-4">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                </div>
+                <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Báo cáo</h2>
+                <p class="mt-2 text-3xl font-bold text-gray-900" th:text="${reportCount}">0</p>
+            </div>
+
+            <!-- Card 5 -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex flex-col items-center justify-center text-center">
+                <div class="w-12 h-12 inline-flex items-center justify-center rounded-full bg-yellow-100 text-yellow-500 mb-4">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" class="w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                </div>
+                <h2 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Tài liệu trùng</h2>
+                <p class="mt-2 text-3xl font-bold text-gray-900" th:text="${duplicateCount}">0</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Tổng quan Hệ thống</h3>
+                <canvas id="overviewChart" height="250"></canvas>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-bold text-gray-800 mb-4">Tỷ lệ Trạng thái (Minh họa)</h3>
+                <canvas id="ratioChart" height="250"></canvas>
+            </div>
+        </div>
+        
+    </main>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const facultyCount = /*[[${facultyCount}]]*/ 0;
+        const courseCount = /*[[${courseCount}]]*/ 0;
+        const documentCount = /*[[${documentCount}]]*/ 0;
+        const duplicateCount = /*[[${duplicateCount}]]*/ 0;
+        
+        // Bar Chart
+        const ctxOverview = document.getElementById('overviewChart').getContext('2d');
+        new Chart(ctxOverview, {
+            type: 'bar',
+            data: {
+                labels: ['Khoa', 'Học phần', 'Tài liệu', 'Trùng lặp'],
+                datasets: [{
+                    label: 'Số lượng',
+                    data: [facultyCount, courseCount, documentCount, duplicateCount],
+                    backgroundColor: [
+                        'rgba(59, 130, 246, 0.5)',
+                        'rgba(99, 102, 241, 0.5)',
+                        'rgba(16, 185, 129, 0.5)',
+                        'rgba(245, 158, 11, 0.5)'
+                    ],
+                    borderColor: [
+                        'rgb(59, 130, 246)',
+                        'rgb(99, 102, 241)',
+                        'rgb(16, 185, 129)',
+                        'rgb(245, 158, 11)'
+                    ],
+                    borderWidth: 1,
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        // Pie Chart
+        const ctxRatio = document.getElementById('ratioChart').getContext('2d');
+        new Chart(ctxRatio, {
+            type: 'doughnut',
+            data: {
+                labels: ['Tài liệu hợp lệ', 'Tài liệu bị trùng lặp'],
+                datasets: [{
+                    data: [documentCount - duplicateCount, duplicateCount],
+                    backgroundColor: [
+                        'rgba(16, 185, 129, 0.7)',
+                        'rgba(245, 158, 11, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+        /*]]>*/
+    </script>
+</body>
+</html>

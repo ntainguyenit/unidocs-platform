@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/base :: head('Rà soát Trùng lặp | Admin UniDocs')}"></head>
+<body class="bg-gray-50 flex flex-col min-h-screen">
+    
+    <header class="bg-primary text-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <a th:href="@{/admin/documents}" class="flex items-center gap-2 text-xl font-bold tracking-tight text-white hover:text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        UniDocs Admin
+                    </a>
+                    <nav class="hidden md:flex items-center gap-4">
+                        <a th:href="@{/admin/documents}" class="text-sm text-blue-100 hover:text-white transition-colors">Quản lý Tài liệu</a>
+                        <a th:href="@{/admin/reports}" class="text-sm text-blue-100 hover:text-white transition-colors">Quản lý Báo cáo</a>
+                        <a th:href="@{/admin/duplicates}" class="text-sm text-white font-semibold border-b-2 border-white pb-1">Trùng lặp</a>
+                        <a th:href="@{/admin/statistics}" class="text-sm text-blue-100 hover:text-white transition-colors">Thống kê</a>
+                    </nav>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a th:href="@{/}" class="text-sm text-blue-100 hover:text-white transition-colors flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Về trang web
+                    </a>
+                    <form th:action="@{/admin/logout}" method="post" class="inline">
+                        <button type="submit" class="text-sm font-medium bg-red-600 hover:bg-red-700 text-white py-1.5 px-3 rounded transition-colors">Đăng xuất</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-900">Tài liệu Trùng lặp</h1>
+            <p class="text-sm text-gray-600">Rà soát các tài liệu có cùng tên trong cùng một Học phần</p>
+        </div>
+
+        <div th:if="${successMessage}" class="mb-4 bg-green-50 border-l-4 border-green-400 p-4 rounded-md">
+            <p class="text-sm text-green-700" th:text="${successMessage}"></p>
+        </div>
+        <div th:if="${errorMessage}" class="mb-4 bg-red-50 border-l-4 border-red-400 p-4 rounded-md">
+            <p class="text-sm text-red-700" th:text="${errorMessage}"></p>
+        </div>
+
+        <form th:action="@{/admin/duplicates/delete}" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn gỡ bỏ (xóa vĩnh viễn) các tài liệu đã chọn không?');">
+            
+            <div th:if="${#lists.isEmpty(duplicateGroups)}" class="bg-white rounded-lg border border-gray-200 p-8 text-center shadow-sm">
+                <svg class="mx-auto h-12 w-12 text-green-500 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <h3 class="text-lg font-medium text-gray-900">Hệ thống sạch sẽ!</h3>
+                <p class="text-gray-500 mt-1">Không phát hiện tài liệu trùng lặp nào trong cơ sở dữ liệu.</p>
+            </div>
+
+            <div th:unless="${#lists.isEmpty(duplicateGroups)}">
+                <div class="mb-4 flex justify-between items-center">
+                    <p class="text-sm text-gray-600">Phát hiện <strong th:text="${duplicateGroups.size()}"></strong> nhóm tài liệu trùng lặp.</p>
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white font-medium rounded hover:bg-red-700 transition-colors flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Xóa tài liệu đã chọn
+                    </button>
+                </div>
+
+                <div class="space-y-6">
+                    <div th:each="group, stat : ${duplicateGroups}" class="bg-white shadow-sm rounded-lg border border-red-100 overflow-hidden">
+                        <div class="px-6 py-3 bg-red-50 border-b border-red-100 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-semibold text-red-800" th:text="${group[0].title}">Tên tài liệu</h3>
+                                <p class="text-xs text-red-600 mt-0.5">Học phần: <span th:text="${group[0].course.name}"></span></p>
+                            </div>
+                            <span class="text-xs font-medium text-red-700 bg-red-100 px-2 py-1 rounded" th:text="${group.size()} + ' bản sao'"></span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left text-gray-500">
+                                <thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 w-12 text-center">Xóa</th>
+                                        <th scope="col" class="px-6 py-3">Loại file</th>
+                                        <th scope="col" class="px-6 py-3">Kích thước</th>
+                                        <th scope="col" class="px-6 py-3">Ngày tải lên</th>
+                                        <th scope="col" class="px-6 py-3 text-right">Xem</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="doc, docStat : ${group}" class="border-b hover:bg-gray-50">
+                                        <td class="px-6 py-3 text-center">
+                                            <!-- Mặc định chọn tất cả trừ file gốc (file đầu tiên trong nhóm, hoặc file cũ nhất) -->
+                                            <input type="checkbox" name="duplicateIds" th:value="${doc.id}" 
+                                                   th:checked="${docStat.index > 0}"
+                                                   class="rounded border-gray-300 text-red-600 focus:ring-red-500 w-4 h-4">
+                                        </td>
+                                        <td class="px-6 py-3 font-medium text-gray-900">
+                                            <span th:text="${doc.fileType.name()}" class="px-2 py-1 text-xs rounded bg-gray-100"></span>
+                                        </td>
+                                        <td class="px-6 py-3" th:text="${#numbers.formatDecimal(doc.fileSize / 1024.0 / 1024.0, 1, 2)} + ' MB'"></td>
+                                        <td class="px-6 py-3" th:text="${#temporals.format(doc.uploadedAt, 'dd/MM/yyyy HH:mm')}"></td>
+                                        <td class="px-6 py-3 text-right">
+                                            <a th:href="${doc.storageUrl}" target="_blank" class="text-blue-600 hover:underline">Xem file</a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </main>
+
+</body>
+</html>

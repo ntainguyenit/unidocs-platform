@@ -22,4 +22,9 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     Optional<Document> findBySlug(String slug);
     List<Document> findByStatus(DocumentStatus status);
     Page<Document> findByStatusOrderByReliabilityScoreDescUploadedAtDesc(DocumentStatus status, Pageable pageable);
+    
+    // For dynamic sorting
+    Page<Document> findByStatus(DocumentStatus status, Pageable pageable);
+    
+    boolean existsByCourseIdAndTitle(Long courseId, String title);
 }

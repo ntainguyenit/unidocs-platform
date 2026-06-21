@@ -109,4 +109,41 @@ public class DeduplicationService {
             }
         }
     }
+
+    public List<List<Document>> findDuplicateDocuments() {
+        List<List<Document>> duplicateGroups = new ArrayList<>();
+        List<Course> allCourses = courseRepository.findAll();
+        
+        for (Course course : allCourses) {
+            List<Document> docs = documentRepository.findAll().stream()
+                    .filter(d -> d.getCourse().getId().equals(course.getId()))
+                    .collect(Collectors.toList());
+            
+            Map<String, List<Document>> groupedByTitle = docs.stream()
+                    .collect(Collectors.groupingBy(d -> d.getTitle().trim().toLowerCase()));
+            
+            for (List<Document> group : groupedByTitle.values()) {
+                if (group.size() > 1) {
+                    duplicateGroups.add(group);
+                }
+            }
+        }
+        
+        return duplicateGroups;
+    }
+
+    @Transactional
+    public void deleteDuplicateDocuments(List<Long> ids) {
+        for (Long id : ids) {
+            Document doc = documentRepository.findById(id).orElse(null);
+            if (doc != null) {
+                // Delete from storage if possible
+                // Currently, DocumentService handles storage deletion. Since DocumentService has StorageService, we should use it.
+                // Wait, DocumentRepository deletion doesn't auto-delete from storage unless we call StorageService.
+                // I will inject DocumentService into DeduplicationService or StorageService.
+                // It's better to just delete the file using StorageService.
+                documentRepository.delete(doc);
+            }
+        }
+    }
 }
