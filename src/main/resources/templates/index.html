@@ -15,7 +15,7 @@
                 <p class="text-gray-300 text-lg max-w-2xl">Truy cập hàng ngàn đề thi các năm và đề cương ôn tập các học phần hoàn toàn miễn phí. Không cần đăng nhập, tốc độ tải cực nhanh.</p>
             </div>
             <div class="absolute top-0 right-0 opacity-10">
-                <svg width="400" height="400" viewBox="0 0 24 24" fill="currentColor">
+                <svg width="400" height="400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                 </svg>
             </div>
@@ -72,11 +72,26 @@
 
         <div class="mb-12">
             <div class="flex justify-between items-end mb-6 border-b border-divider pb-2">
-                <h2 class="text-2xl text-text">Các Trường đại học thành viên</h2>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-2xl text-text">Các Trường đại học thành viên</h2>
+                    <div class="relative group" tabindex="0">
+                        <button type="button" class="text-gray-400 hover:text-primary transition-colors focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </button>
+                        <!-- Tooltip -->
+                        <div class="absolute left-0 sm:left-1/2 sm:-translate-x-1/2 bottom-full mb-2 w-72 bg-gray-800 text-white text-xs rounded-lg py-3 px-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible group-focus-within:opacity-100 group-focus-within:visible transition-all z-50 shadow-xl border border-gray-700">
+                            Bấm vào các thẻ Khoa &rarr; Học phần &rarr; Xem chi tiết hoặc Tải xuống – Có lỗi thì Báo cáo. Ngoài ra, đóng góp bằng cách Tải lên Tài liệu.
+                            <!-- Arrow -->
+                            <div class="absolute top-full left-4 sm:left-1/2 sm:-translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <a th:each="uni : ${universities}" th:href="@{/university/{slug}(slug=${uni.slug})}" class="card group hover:-translate-y-1 hover:shadow-md transition-all cursor-pointer flex flex-col items-center justify-center p-6 text-center h-48">
+                <a th:each="uni : ${universities}" th:href="@{/university/{slug}(slug=${uni.slug})}" class="card group hover:-translate-y-1 hover:shadow-md transition-all cursor-pointer flex flex-col items-center justify-center p-6 text-center h-full min-h-[12rem]">
                     <div class="w-16 h-16 mb-4 flex items-center justify-center">
                         <img th:if="${uni.logoUrl}" th:src="${uni.logoUrl}" alt="Logo" class="w-full h-full object-contain drop-shadow-sm group-hover:scale-110 transition-transform duration-300" />
                         <div th:unless="${uni.logoUrl}" th:class="${uni.color} + ' text-white rounded-full w-full h-full flex items-center justify-center font-bold text-xl shadow-inner group-hover:scale-110 transition-transform duration-300'">
@@ -131,7 +146,7 @@
 
         <div class="mb-12">
             <div class="flex justify-between items-end mb-6 border-b border-divider pb-2">
-                <h2 class="text-2xl text-text">Tiện ích sinh viên</h2>
+                <h2 class="text-2xl text-text">Tiện ích sinh viên <span class="text-gray-500 text-sm font-normal">(Sử dụng miễn phí)</span></h2>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
