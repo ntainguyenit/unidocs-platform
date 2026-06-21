@@ -177,9 +177,20 @@ public class AdminController {
     }
 
     @GetMapping("/duplicates")
-    public String viewDuplicates(Model model) {
-        List<List<Document>> duplicates = deduplicationService.findDuplicateDocuments();
-        model.addAttribute("duplicateGroups", duplicates);
+    public String viewDuplicates(@RequestParam(defaultValue = "0") int page, 
+                                 @RequestParam(defaultValue = "10") int size, 
+                                 Model model) {
+        List<List<Document>> allDuplicates = deduplicationService.findDuplicateDocuments();
+        
+        int start = Math.min((int)org.springframework.data.domain.PageRequest.of(page, size).getOffset(), allDuplicates.size());
+        int end = Math.min((start + size), allDuplicates.size());
+        List<List<Document>> pageContent = allDuplicates.subList(start, end);
+        
+        org.springframework.data.domain.Page<List<Document>> duplicatePage = new org.springframework.data.domain.PageImpl<>(pageContent, org.springframework.data.domain.PageRequest.of(page, size), allDuplicates.size());
+        
+        model.addAttribute("duplicatePage", duplicatePage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", duplicatePage.getTotalPages());
         return "admin/duplicates";
     }
 

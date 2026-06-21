@@ -92,8 +92,8 @@
                     <div class="text-sm flex gap-2">
                         <select id="statusFilter" class="border border-gray-300 rounded p-1.5 text-sm focus:ring-primary focus:border-primary">
                             <option value="">Tất cả trạng thái</option>
-                            <option value="PENDING" th:selected="${currentStatus != null and currentStatus.name() == 'PENDING'}">Chờ duyệt</option>
-                            <option value="APPROVED" th:selected="${currentStatus != null and currentStatus.name() == 'APPROVED'}">Đã duyệt</option>
+                            <option value="PENDING" th:selected="${currentStatus != null and currentStatus == 'PENDING'}">Chờ duyệt</option>
+                            <option value="APPROVED" th:selected="${currentStatus != null and currentStatus == 'APPROVED'}">Đã duyệt</option>
                         </select>
                         <select id="sortFilter" class="border border-gray-300 rounded p-1.5 text-sm focus:ring-primary focus:border-primary">
                             <option value="newest" th:selected="${currentSort == 'newest'}">Mới nhất</option>
