@@ -2,8 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <div th:replace="~{fragments/base :: head(${course.name} + ' - ' + ${course.faculty.university.shortName} + ' | UniDocs')}"></div>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-</head>
+    <!-- Removed Turnstile Script --></head>
 <body class="bg-gray-50 flex flex-col min-h-screen">
     
     <div th:replace="~{fragments/base :: navbar}"></div>
@@ -181,10 +180,7 @@
                                             hover:file:bg-blue-100">
                                     </div>
 
-                                    <!-- Cloudflare Turnstile -->
-                                    <div class="mt-4 flex justify-center">
-                                        <div class="cf-turnstile" th:attr="data-sitekey=${turnstileSiteKey}"></div>
-                                    </div>
+                                    <!-- Removed Cloudflare Turnstile -->
 
 
                                     
@@ -280,11 +276,7 @@
                     const response = JSON.parse(xhr.responseText);
                     showResult(response.message, 'success');
                     form.reset();
-                    // Optional: reset turnstile widget
-                    if (typeof turnstile !== 'undefined') {
-                        turnstile.reset();
-                    }
-                    setTimeout(() => {
+                    // Turnstile removed                    setTimeout(() => {
                         document.getElementById('uploadModal').classList.add('hidden');
                     }, 3000);
                 } else {

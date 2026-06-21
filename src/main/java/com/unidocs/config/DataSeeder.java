@@ -46,11 +46,16 @@ public class DataSeeder implements CommandLineRunner {
             jdbcTemplate.execute("DELETE FROM documents WHERE course_id IN (SELECT id FROM courses WHERE faculty_id IN (" + badFacultiesQuery + "))");
             jdbcTemplate.execute("DELETE FROM courses WHERE faculty_id IN (" + badFacultiesQuery + ")");
             jdbcTemplate.execute("DELETE FROM faculties WHERE id IN (" + badFacultiesQuery + ")");
-            // Delete HUL
-            jdbcTemplate.execute("DELETE FROM documents WHERE course_id IN (SELECT id FROM courses WHERE faculty_id IN (SELECT id FROM faculties WHERE university_id IN (SELECT id FROM universities WHERE short_name = 'HUL')))");
-            jdbcTemplate.execute("DELETE FROM courses WHERE faculty_id IN (SELECT id FROM faculties WHERE university_id IN (SELECT id FROM universities WHERE short_name = 'HUL'))");
-            jdbcTemplate.execute("DELETE FROM faculties WHERE university_id IN (SELECT id FROM universities WHERE short_name = 'HUL')");
-            jdbcTemplate.execute("DELETE FROM universities WHERE short_name = 'HUL'");
+                        try {
+                System.out.println("====== STARTING DELETE HUL ======");
+                jdbcTemplate.execute("DELETE FROM documents WHERE course_id IN (SELECT id FROM courses WHERE faculty_id IN (SELECT id FROM faculties WHERE university_id IN (SELECT id FROM universities WHERE short_name = 'HUL')))");
+                jdbcTemplate.execute("DELETE FROM courses WHERE faculty_id IN (SELECT id FROM faculties WHERE university_id IN (SELECT id FROM universities WHERE short_name = 'HUL'))");
+                jdbcTemplate.execute("DELETE FROM faculties WHERE university_id IN (SELECT id FROM universities WHERE short_name = 'HUL')");
+                jdbcTemplate.execute("DELETE FROM universities WHERE short_name = 'HUL'");
+                System.out.println("====== FINISHED DELETE HUL ======");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             // Ignore constraint drop errors (e.g. on H2)
         }
@@ -334,4 +339,5 @@ public class DataSeeder implements CommandLineRunner {
         }
     }
 }
+
 
