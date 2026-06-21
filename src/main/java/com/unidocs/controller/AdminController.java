@@ -64,12 +64,15 @@ public class AdminController {
     }
 
     @PostMapping("/documents/{id}/rename")
-    public String renameDocument(@PathVariable Long id, @RequestParam("newName") String newName, RedirectAttributes redirectAttributes) {
+    public String renameDocument(@PathVariable Long id, @RequestParam("newName") String newName, @RequestParam(value = "fromReports", required = false) Boolean fromReports, RedirectAttributes redirectAttributes) {
         try {
             documentService.renameDocument(id, newName);
             redirectAttributes.addFlashAttribute("successMessage", "Đổi tên tài liệu thành công!");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        if (Boolean.TRUE.equals(fromReports)) {
+            return "redirect:/admin/reports";
         }
         return "redirect:/admin/documents";
     }

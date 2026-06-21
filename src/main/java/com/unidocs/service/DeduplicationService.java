@@ -111,19 +111,20 @@ public class DeduplicationService {
     }
 
     public List<List<Document>> findDuplicateDocuments() {
+        List<Document> allDocs = documentRepository.findAll();
+        Map<Long, Map<String, List<Document>>> groupedByCourseAndTitle = allDocs.stream()
+                .filter(d -> d.getCourse() != null && d.getTitle() != null)
+                .collect(Collectors.groupingBy(
+                        d -> d.getCourse().getId(),
+                        Collectors.groupingBy(d -> d.getTitle().trim().toLowerCase())
+                ));
+                
         List<List<Document>> duplicateGroups = new ArrayList<>();
-        List<Course> allCourses = courseRepository.findAll();
-        
-        for (Course course : allCourses) {
-            List<Document> docs = documentRepository.findAll().stream()
-                    .filter(d -> d.getCourse().getId().equals(course.getId()))
-                    .collect(Collectors.toList());
-            
-            Map<String, List<Document>> groupedByTitle = docs.stream()
-                    .collect(Collectors.groupingBy(d -> d.getTitle().trim().toLowerCase()));
-            
-            for (List<Document> group : groupedByTitle.values()) {
+        for (Map<String, List<Document>> courseGroups : groupedByCourseAndTitle.values()) {
+            for (List<Document> group : courseGroups.values()) {
                 if (group.size() > 1) {
+                    // Sort each group so the newest is first, or by ID to be deterministic
+                    group.sort(Comparator.comparing(Document::getId));
                     duplicateGroups.add(group);
                 }
             }
