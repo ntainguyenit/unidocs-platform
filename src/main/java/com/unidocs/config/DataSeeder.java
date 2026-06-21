@@ -46,6 +46,11 @@ public class DataSeeder implements CommandLineRunner {
             jdbcTemplate.execute("DELETE FROM documents WHERE course_id IN (SELECT id FROM courses WHERE faculty_id IN (" + badFacultiesQuery + "))");
             jdbcTemplate.execute("DELETE FROM courses WHERE faculty_id IN (" + badFacultiesQuery + ")");
             jdbcTemplate.execute("DELETE FROM faculties WHERE id IN (" + badFacultiesQuery + ")");
+            // Delete HUL
+            jdbcTemplate.execute("DELETE FROM documents WHERE course_id IN (SELECT id FROM courses WHERE faculty_id IN (SELECT id FROM faculties WHERE university_id IN (SELECT id FROM universities WHERE short_name = 'HUL')))");
+            jdbcTemplate.execute("DELETE FROM courses WHERE faculty_id IN (SELECT id FROM faculties WHERE university_id IN (SELECT id FROM universities WHERE short_name = 'HUL'))");
+            jdbcTemplate.execute("DELETE FROM faculties WHERE university_id IN (SELECT id FROM universities WHERE short_name = 'HUL')");
+            jdbcTemplate.execute("DELETE FROM universities WHERE short_name = 'HUL'");
         } catch (Exception e) {
             // Ignore constraint drop errors (e.g. on H2)
         }
@@ -268,9 +273,7 @@ public class DataSeeder implements CommandLineRunner {
             }
         }
 
-        seedFacultiesOnly(existingFaculties, hul, Arrays.asList(
-                "Luật", "Luật kinh tế"
-        ));
+        
     }
 
     private University getOrCreateUniversity(List<University> existingUnis, String name, String shortName, String description, String logoUrl, String color) {
@@ -331,3 +334,4 @@ public class DataSeeder implements CommandLineRunner {
         }
     }
 }
+
