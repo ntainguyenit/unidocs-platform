@@ -8,7 +8,11 @@
     
     <div th:replace="~{fragments/base :: navbar}"></div>
 
-    <main class="flex-grow container mx-auto px-4 py-8 max-w-2xl">
+    <main class="flex-grow container mx-auto px-4 py-8 max-w-4xl">
+        <a th:href="@{/}" class="inline-flex items-center text-sm font-medium text-gray-600 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2 hover:bg-gray-50 hover:text-gray-900 mb-6 transition-colors w-fit">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Quay l?i
+        </a>
         <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
@@ -180,3 +184,4 @@
     </script>
 </body>
 </html>
+

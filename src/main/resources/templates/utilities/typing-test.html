@@ -25,6 +25,10 @@
     <div th:replace="~{fragments/base :: navbar}"></div>
 
     <main class="flex-grow container mx-auto px-4 py-8 max-w-4xl">
+        <a th:href="@{/}" class="inline-flex items-center text-sm font-medium text-gray-600 bg-white border border-gray-200 shadow-sm rounded-lg px-4 py-2 hover:bg-gray-50 hover:text-gray-900 mb-6 transition-colors w-fit">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Quay l?i
+        </a>
         <nav class="flex text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-3">
                 <li class="inline-flex items-center">
@@ -64,8 +68,15 @@
             </div>
 
             <!-- Typing Area -->
-            <div id="textDisplay" class="mb-8 focus:outline-none" tabindex="0">
-                Bấm vào đây và bắt đầu gõ để kiểm tra tốc độ...
+            <div class="relative mb-8">
+                <div id="startOverlay" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center rounded-xl border border-gray-200">
+                    <button id="startTypingBtn" class="bg-primary hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 text-xl">
+                        Bắt đầu
+                    </button>
+                </div>
+                <div id="textDisplay" class="focus:outline-none min-h-[150px]" tabindex="0">
+                    Bấm vào đây và bắt đầu gõ để kiểm tra tốc độ...
+                </div>
             </div>
 
             <!-- Try Again Button -->
@@ -105,11 +116,14 @@
     <div th:replace="~{fragments/base :: scripts}"></div>
 
     <script>
-        const paragraphs = [
+        const rawParagraphs = [
             "Công nghệ thông tin là một ngành học cực kỳ năng động và phát triển với tốc độ chóng mặt. Những người theo đuổi lĩnh vực này cần phải không ngừng học hỏi, cập nhật các kiến thức mới về ngôn ngữ lập trình, hệ quản trị cơ sở dữ liệu và trí tuệ nhân tạo. Việc gõ phím nhanh là một kỹ năng cơ bản và vô cùng cần thiết đối với mỗi lập trình viên.",
             "Trường Đại học Khoa học, Đại học Huế là một trong những trung tâm đào tạo và nghiên cứu khoa học lớn của miền Trung. Sinh viên tại đây luôn được tạo điều kiện tốt nhất để phát huy khả năng sáng tạo và học tập. Khả năng làm việc nhóm và giao tiếp cũng là những kỹ năng mềm quan trọng giúp các bạn tiến xa hơn trên con đường sự nghiệp.",
             "Ngày nay, việc sở hữu một chiếc máy tính cá nhân kết nối Internet đã mở ra vô vàn cơ hội học tập. Khắp nơi trên thế giới, hàng triệu dòng mã được viết ra mỗi ngày để xây dựng những phần mềm, ứng dụng giúp cuộc sống trở nên tiện lợi hơn. Bạn có bao giờ tự hỏi làm cách nào để gõ phím nhanh mà không cần nhìn bàn phím chưa?",
-            "Lập trình viên không chỉ là những người viết ra mã máy, mà họ còn là những nghệ sĩ thực thụ. Bằng cách sắp xếp các câu lệnh logic, họ biến những ý tưởng vô hình thành những sản phẩm hữu hình hiện diện trên mọi thiết bị. Thật thú vị khi có thể giao tiếp với máy tính và bắt chúng thực hiện chính xác những gì mình muốn."
+            "Lập trình viên không chỉ là những người viết ra mã máy, mà họ còn là những nghệ sĩ thực thụ. Bằng cách sắp xếp các câu lệnh logic, họ biến những ý tưởng vô hình thành những sản phẩm hữu hình hiện diện trên mọi thiết bị. Thật thú vị khi có thể giao tiếp với máy tính và bắt chúng thực hiện chính xác những gì mình muốn.",
+            "Hệ điều hành Windows, Linux hay macOS đều có những ưu điểm và khuyết điểm riêng biệt. Việc lựa chọn môi trường phát triển phụ thuộc rất nhiều vào thói quen và tính chất công việc của từng cá nhân. Một lập trình viên giỏi là người có thể linh hoạt thích nghi với bất kỳ hệ thống nào.",
+            "Cơ sở dữ liệu đóng vai trò cốt lõi trong mọi ứng dụng hiện đại. Từ những trang web nhỏ cho đến các hệ thống thương mại điện tử khổng lồ, tất cả đều cần đến SQL hoặc NoSQL để lưu trữ và truy xuất thông tin một cách an toàn và nhanh chóng nhất.",
+            "An toàn thông tin và bảo mật mạng đang trở thành mối quan tâm hàng đầu của các doanh nghiệp. Mỗi ngày có hàng ngàn cuộc tấn công mạng diễn ra, đòi hỏi các chuyên gia bảo mật phải luôn cảnh giác và cập nhật hệ thống phòng thủ liên tục để bảo vệ dữ liệu người dùng."
         ];
 
         let timeLimit = 60;
@@ -119,6 +133,7 @@
         let charIndex = 0;
         let mistakes = 0;
         let isTestFinished = false;
+        let hasStarted = false;
 
         const textDisplay = document.getElementById('textDisplay');
         const timeDisplay = document.getElementById('timeDisplay');
@@ -128,10 +143,23 @@
         const resultOverlay = document.getElementById('resultOverlay');
         const finalWpm = document.getElementById('finalWpm');
         const finalAcc = document.getElementById('finalAcc');
+        const startOverlay = document.getElementById('startOverlay');
+        const startTypingBtn = document.getElementById('startTypingBtn');
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
 
         function loadParagraph() {
-            const ranIndex = Math.floor(Math.random() * paragraphs.length);
-            const text = paragraphs[ranIndex];
+            const ranIndex = Math.floor(Math.random() * rawParagraphs.length);
+            let words = rawParagraphs[ranIndex].split(" ");
+            words = shuffleArray(words);
+            const text = words.join(" ") + " ";
+            
             textDisplay.innerHTML = "";
             text.split("").forEach(char => {
                 let span = `<span>${char}</span>`;
@@ -148,15 +176,22 @@
             mistakes = 0;
             isPlaying = false;
             isTestFinished = false;
+            hasStarted = false;
             timeDisplay.innerText = timeLeft;
             wpmDisplay.innerText = 0;
             accuracyDisplay.innerText = 100;
             resultOverlay.classList.add('hidden');
-            textDisplay.focus();
+            startOverlay.classList.remove('hidden');
         }
 
+        startTypingBtn.addEventListener('click', () => {
+            hasStarted = true;
+            startOverlay.classList.add('hidden');
+            textDisplay.focus();
+        });
+
         function handleInput(e) {
-            if (isTestFinished) return;
+            if (isTestFinished || !hasStarted) return;
             
             // Ignore modifiers
             if(["Shift", "Control", "Alt", "Meta", "CapsLock", "Tab", "Escape"].includes(e.key)) return;
@@ -254,3 +289,4 @@
     </script>
 </body>
 </html>
+
