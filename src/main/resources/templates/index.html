@@ -118,7 +118,7 @@
                                 <div>
                                     <h3 class="text-base font-bold text-gray-900 line-clamp-2">
                                         <span th:text="${note.title}">Tiêu đề</span>
-                                        <span th:if="${noteStat.index == 0}" class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500 text-white leading-none align-middle shadow-sm animate-pulse">NEW</span>
+                                        <span th:if="${noteStat.index == 0}" class="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-500 text-white leading-none relative -top-0.5 shadow-sm animate-pulse">NEW</span>
                                     </h3>
                                     <p class="mt-1 text-sm text-gray-500 line-clamp-2" th:text="${note.content}">Nội dung</p>
                                 </div>
@@ -504,25 +504,30 @@
             document.getElementById('modalFooterActions').innerHTML = downloadBtn;
             document.getElementById('infoModal').classList.remove('hidden');
 
-            // Reset and start auto-close countdown
+            // Reset and start auto-close countdown if not TinChi
             clearInterval(autoCloseInterval);
             clearTimeout(autoCloseTimeout);
-            secondsLeft = 25;
             const timerEl = document.getElementById('autoCloseTimer');
-            timerEl.textContent = `Tự động đóng sau: ${secondsLeft}s`;
             
-            autoCloseInterval = setInterval(() => {
-                secondsLeft--;
-                if (secondsLeft > 0) {
-                    timerEl.textContent = `Tự động đóng sau: ${secondsLeft}s`;
-                } else {
-                    clearInterval(autoCloseInterval);
-                }
-            }, 1000);
+            if (type !== 'TinChi') {
+                secondsLeft = 25;
+                timerEl.textContent = `Tự động đóng sau: ${secondsLeft}s`;
+                
+                autoCloseInterval = setInterval(() => {
+                    secondsLeft--;
+                    if (secondsLeft > 0) {
+                        timerEl.textContent = `Tự động đóng sau: ${secondsLeft}s`;
+                    } else {
+                        clearInterval(autoCloseInterval);
+                    }
+                }, 1000);
 
-            autoCloseTimeout = setTimeout(() => {
-                closeInfoModal();
-            }, 25000);
+                autoCloseTimeout = setTimeout(() => {
+                    closeInfoModal();
+                }, 25000);
+            } else {
+                timerEl.textContent = '';
+            }
         }
 
         function closeInfoModal() {
