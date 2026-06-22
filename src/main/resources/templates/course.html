@@ -85,57 +85,92 @@
             </div>
         </div>
 
-        <div th:unless="${documents.empty}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <!-- Document Card -->
-            <div th:each="doc : ${documents}" class="card p-4 flex flex-col group hover:-translate-y-1 hover:shadow-md transition-all">
-                <div class="flex items-start gap-3">
-                    <!-- Icon based on type -->
-                    <div th:if="${doc.thumbnailUrl != null}" class="w-12 h-16 shrink-0 rounded overflow-hidden shadow-sm border border-gray-200">
-                        <img th:src="${doc.thumbnailUrl}" loading="lazy" class="w-full h-full object-cover" alt="Preview" />
+        <!-- Folder View -->
+        <div th:if="${folders != null}">
+            <div th:if="${folders.empty}" class="text-center py-12">
+                <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <h3 class="text-lg font-medium text-gray-900 mb-1">Chưa có tài liệu nào</h3>
+                <p class="text-gray-500">Hãy là người đầu tiên đóng góp tài liệu cho học phần này!</p>
+            </div>
+            
+            <div th:unless="${folders.empty}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <a th:each="f : ${folders}" th:href="@{/course/{slug}(slug=${course.slug}, folder=${f})}" class="bg-white rounded-lg p-4 flex items-center gap-4 hover:-translate-y-1 hover:shadow-md transition-all group cursor-pointer border border-divider shadow-sm">
+                    <div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-lg flex items-center justify-center shrink-0 border border-yellow-100 group-hover:bg-yellow-100 transition-colors">
+                        <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
                     </div>
-                    <div th:if="${doc.thumbnailUrl == null && doc.fileType.name() == 'PDF'}" class="w-12 h-12 flex items-center justify-center rounded bg-red-50 text-red-600 shrink-0">
-                        <span class="font-bold text-xs">PDF</span>
+                    <div class="min-w-0">
+                        <h3 class="text-base font-bold text-gray-800 group-hover:text-primary transition-colors truncate" th:text="${f}">2022 - 2023</h3>
                     </div>
-                    <div th:if="${doc.fileType.name() == 'DOCX'}" class="w-12 h-12 flex items-center justify-center rounded bg-blue-50 text-blue-600 shrink-0">
-                        <span class="font-bold text-xs">DOCX</span>
-                    </div>
-                    <div th:if="${doc.fileType.name() == 'PPTX'}" class="w-12 h-12 flex items-center justify-center rounded bg-orange-50 text-orange-600 shrink-0">
-                        <span class="font-bold text-xs">PPTX</span>
-                    </div>
-                    <div th:if="${doc.fileType.name() == 'IMAGE'}" class="w-12 h-12 flex items-center justify-center rounded bg-green-50 text-green-600 shrink-0">
-                        <span class="font-bold text-xs">IMG</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Document View -->
+        <div th:if="${documents != null}">
+            <div class="mb-4 flex items-center justify-between">
+                <a th:href="@{/course/{slug}(slug=${course.slug})}" class="text-sm text-gray-500 hover:text-primary flex items-center gap-1 bg-white px-3 py-1.5 rounded border border-divider shadow-sm transition-colors font-medium">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Quay lại thư mục
+                </a>
+                <div class="text-sm font-bold text-gray-700 bg-gray-100 px-3 py-1.5 rounded flex items-center gap-2 border border-gray-200">
+                    <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
+                    <span th:text="${currentFolder}">Năm học</span>
+                </div>
+            </div>
+            
+            <div th:if="${documents.empty}" class="text-center py-12">
+                <p class="text-gray-500">Thư mục này hiện chưa có tài liệu nào.</p>
+            </div>
+
+            <div th:unless="${documents.empty}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Document Card -->
+                <div th:each="doc : ${documents}" class="card p-4 flex flex-col group hover:-translate-y-1 hover:shadow-md transition-all">
+                    <div class="flex items-start gap-3">
+                        <!-- Icon based on type -->
+                        <div th:if="${doc.thumbnailUrl != null}" class="w-12 h-16 shrink-0 rounded overflow-hidden shadow-sm border border-gray-200">
+                            <img th:src="${doc.thumbnailUrl}" loading="lazy" class="w-full h-full object-cover" alt="Preview" />
+                        </div>
+                        <div th:if="${doc.thumbnailUrl == null && doc.fileType.name() == 'PDF'}" class="w-12 h-12 flex items-center justify-center rounded bg-red-50 text-red-600 shrink-0">
+                            <span class="font-bold text-xs">PDF</span>
+                        </div>
+                        <div th:if="${doc.fileType.name() == 'DOCX'}" class="w-12 h-12 flex items-center justify-center rounded bg-blue-50 text-blue-600 shrink-0">
+                            <span class="font-bold text-xs">DOCX</span>
+                        </div>
+                        <div th:if="${doc.fileType.name() == 'PPTX'}" class="w-12 h-12 flex items-center justify-center rounded bg-orange-50 text-orange-600 shrink-0">
+                            <span class="font-bold text-xs">PPTX</span>
+                        </div>
+                        <div th:if="${doc.fileType.name() == 'IMAGE'}" class="w-12 h-12 flex items-center justify-center rounded bg-green-50 text-green-600 shrink-0">
+                            <span class="font-bold text-xs">IMG</span>
+                        </div>
+                        
+                        <div class="flex-grow min-w-0">
+                            <div class="flex items-center gap-2">
+                                <h3 class="text-base font-bold text-text truncate group-hover:text-primary transition-colors" th:text="${doc.title}">Tên tài liệu</h3>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-500">
+                                <span th:text="${#numbers.formatDecimal(doc.fileSize / 1024.0 / 1024.0, 1, 2)} + ' MB'">2.5 MB</span>
+                                <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> <span th:text="${doc.views}">120</span></span>
+                                <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> <span th:text="${doc.downloads}">45</span></span>
+                            </div>
+                        </div>
                     </div>
                     
-                    <div class="flex-grow min-w-0">
-                        <div class="flex items-center gap-2">
-                            <h3 class="text-base font-bold text-text truncate group-hover:text-primary transition-colors" th:text="${doc.title}">Tên tài liệu</h3>
-                            <span th:if="${doc.folderName != null && doc.folderName != 'Khác (Tài liệu không xác định năm)'}" 
-                                  th:text="${doc.folderName}" 
-                                  class="bg-gray-100 text-gray-800 text-[10px] font-semibold px-2 py-0.5 rounded border border-gray-200 whitespace-nowrap">
-                                2022-2023
-                            </span>
+                    <!-- Actions -->
+                    <div class="mt-4 pt-3 border-t border-divider flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <a th:href="@{/document/{slug}/view(slug=${doc.slug})}" target="_blank" class="text-sm font-medium text-primary hover:underline flex items-center gap-1">
+                                Xem chi tiết
+                            </a>
+                            <button type="button" th:onclick="'openReportModal(' + ${doc.id} + ')'" class="text-xs font-medium text-red-500 hover:text-red-700 hover:underline flex items-center gap-1">
+                                Báo cáo
+                            </button>
                         </div>
-                        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-gray-500">
-                            <span th:text="${#numbers.formatDecimal(doc.fileSize / 1024.0 / 1024.0, 1, 2)} + ' MB'">2.5 MB</span>
-                            <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> <span th:text="${doc.views}">120</span></span>
-                            <span class="flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg> <span th:text="${doc.downloads}">45</span></span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Actions -->
-                <div class="mt-4 pt-3 border-t border-divider flex justify-between items-center">
-                    <div class="flex items-center gap-3">
-                        <a th:href="@{/document/{slug}/view(slug=${doc.slug})}" target="_blank" class="text-sm font-medium text-primary hover:underline flex items-center gap-1">
-                            Xem chi tiết
+                        <a th:href="@{/document/{slug}/download(slug=${doc.slug})}" class="btn btn-secondary py-1 px-3 text-sm flex items-center gap-1">
+                            Tải xuống
                         </a>
-                        <button type="button" th:onclick="'openReportModal(' + ${doc.id} + ')'" class="text-xs font-medium text-red-500 hover:text-red-700 hover:underline flex items-center gap-1">
-                            Báo cáo
-                        </button>
                     </div>
-                    <a th:href="@{/document/{slug}/download(slug=${doc.slug})}" class="btn btn-secondary py-1 px-3 text-sm flex items-center gap-1">
-                        Tải xuống
-                    </a>
                 </div>
             </div>
         </div>

@@ -68,15 +68,33 @@ public class HomeController {
     private String turnstileSiteKey;
 
     @GetMapping("/course/{slug}")
-    public String courseDetail(@org.springframework.web.bind.annotation.PathVariable String slug, Model model) {
+    public String courseDetail(@org.springframework.web.bind.annotation.PathVariable String slug, 
+                               @org.springframework.web.bind.annotation.RequestParam(required = false) String folder,
+                               Model model) {
         com.unidocs.domain.Course course = courseRepository.findBySlug(slug)
             .orElseThrow(() -> new IllegalArgumentException("Invalid course slug:" + slug));
         
         java.util.List<com.unidocs.domain.Document> allDocs = documentService.getApprovedDocumentsByCourse(course.getId());
             
         model.addAttribute("course", course);
-        model.addAttribute("documents", allDocs);
         model.addAttribute("turnstileSiteKey", turnstileSiteKey);
+        
+        if (folder == null) {
+            // Get unique folder names, optionally sort them
+            java.util.List<String> folders = allDocs.stream()
+                .map(d -> d.getFolderName() != null ? d.getFolderName() : "Khác (Tài liệu không xác định năm)")
+                .distinct()
+                .sorted(java.util.Comparator.reverseOrder()) // Sort descending so newer years are first
+                .toList();
+            model.addAttribute("folders", folders);
+            model.addAttribute("documents", null);
+        } else {
+            java.util.List<com.unidocs.domain.Document> filteredDocs = allDocs.stream()
+                .filter(d -> folder.equals(d.getFolderName()) || (folder.equals("Khác (Tài liệu không xác định năm)") && d.getFolderName() == null))
+                .toList();
+            model.addAttribute("currentFolder", folder);
+            model.addAttribute("documents", filteredDocs);
+        }
         
         return "course"; // Need to create this template
     }
