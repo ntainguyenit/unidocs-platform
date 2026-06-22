@@ -228,6 +228,7 @@
                     };
 
                     searchInput.addEventListener('input', handleSearchInteraction);
+                    searchInput.addEventListener('click', handleSearchInteraction); // Added click for mobile support
                     searchInput.addEventListener('focus', handleSearchInteraction);
 
                     document.addEventListener('click', (e) => {
@@ -361,17 +362,14 @@
                 <strong class="font-semibold text-gray-700">Tuyên bố miễn trừ trách nhiệm:</strong> Tài liệu trên UniDocs do cộng đồng đóng góp vì mục đích học tập phi lợi nhuận. Chúng tôi không đưa ra bất kỳ bảo đảm nào về tính chính xác tuyệt đối của nội dung. Chúng tôi tôn trọng nghiêm ngặt quyền sở hữu trí tuệ theo pháp luật Việt Nam. Mọi yêu cầu gỡ bỏ tài liệu vi phạm bản quyền vui lòng liên hệ trực tiếp, chúng tôi cam kết kiểm tra và xử lý trong vòng 24 đến 48 giờ làm việc.
             </div>
 
-            <div class="flex flex-col lg:flex-row justify-between items-center border-t border-gray-200 pt-6 gap-4 text-sm text-gray-600">
-                <div class="text-center">
+            <div class="flex flex-col items-center border-t border-gray-200 pt-6 gap-4 text-sm text-gray-600">
+                <div class="text-center w-full">
                     <p>&copy; <script>document.write(new Date().getFullYear())</script> UniDocs. Nền tảng chia sẻ tài liệu học tập.</p>
                     <div class="flex items-center justify-center gap-4 mt-2">
                         <a th:href="@{/terms}" class="hover:text-primary transition-colors font-medium text-xs">Điều khoản sử dụng</a>
                         <a th:href="@{/privacy}" class="hover:text-primary transition-colors font-medium text-xs">Chính sách bảo mật</a>
                     </div>
                 </div>
-                
-                <!-- Spacer for right side balance if needed on desktop -->
-                <div class="hidden lg:block w-32"></div>
             </div>
         </div>
 
