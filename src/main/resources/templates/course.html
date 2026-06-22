@@ -276,28 +276,20 @@
             progressPercent.innerText = '0%';
 
             // Use XMLHttpRequest to track progress
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/documents/upload', true);
+            submitBtn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Đang xử lý...';
 
-            xhr.upload.onprogress = function(e) {
-                if (e.lengthComputable) {
-                    const percentComplete = Math.round((e.loaded / e.total) * 100);
-                    progressBar.style.width = percentComplete + '%';
-                    progressPercent.innerText = percentComplete + '%';
-                }
-            };
+            const formData = new FormData(event.target);
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/api/document/upload', true);
 
             xhr.onload = function() {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = 'Tải lên';
                 
                 if (xhr.status === 200) {
-                    window.isFormDirty = false;
-                    const response = JSON.parse(xhr.responseText);
-                    showResult(response.message, 'success');
-                    form.reset();
-                    // Turnstile removed                    setTimeout(() => {
-                        document.getElementById('uploadModal').classList.add('hidden');
+                    showResult('Tải lên thành công! Cảm ơn bạn đã đóng góp.', 'success');
+                    setTimeout(() => {
+                        closeUploadModal();
                     }, 3000);
                 } else {
                     let errorMsg = 'Có lỗi xảy ra.';
@@ -319,7 +311,6 @@
         }
 
         function showResult(message, type) {
-            // Keep the text message logic for accessibility or fallback
             const resultMessage = document.getElementById('resultMessage');
             resultMessage.innerText = message;
             resultMessage.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800');

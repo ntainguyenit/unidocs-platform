@@ -148,7 +148,7 @@ public class BulkImportService {
         newCourse.setSlug(SlugGenerator.generateSlug(name) + "-" + UUID.randomUUID().toString().substring(0, 4));
         newCourse.setFaculty(faculty);
         Course savedCourse = courseRepository.save(newCourse);
-        faculty.getCourses().add(savedCourse);
+        faculty.getCourses().add(savedCourse); // Add to the collection to prevent duplicates in the same transaction
         return savedCourse;
     }
 
