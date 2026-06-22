@@ -44,7 +44,11 @@ public class DocumentWebController {
 
         documentService.incrementDownloads(doc.getId());
         
-        // Redirect directly to the Supabase S3 URL to trigger download
-        return "redirect:" + doc.getStorageUrl();
+        String url = doc.getStorageUrl();
+        if (url != null && url.contains("supabase.co")) {
+            url = url + (url.contains("?") ? "&" : "?") + "download=";
+        }
+        
+        return "redirect:" + url;
     }
 }

@@ -72,7 +72,7 @@
         </div>
 
         <!-- Viewer Container -->
-        <div class="bg-white rounded-lg shadow-sm border border-divider flex-grow relative min-h-[60vh] flex items-center justify-center overflow-hidden">
+        <div th:if="${document.fileType.name() != 'IMAGE'}" class="bg-white rounded-lg shadow-sm border border-divider flex-grow relative min-h-[80vh] flex items-center justify-center overflow-hidden">
             <iframe th:if="${document.fileType.name() == 'DOCX' or document.fileType.name() == 'PPTX'}" 
                     th:src="'https://docs.google.com/viewer?url=' + ${document.storageUrl} + '&embedded=true'" 
                     class="w-full h-full absolute inset-0 border-0">
@@ -82,10 +82,6 @@
                     th:src="${document.storageUrl} + '#toolbar=0'" 
                     class="w-full h-full absolute inset-0 border-0">
             </iframe>
-            
-            <div th:if="${document.fileType.name() == 'IMAGE'}" class="w-full h-full overflow-auto bg-gray-100 flex items-center justify-center p-4 absolute inset-0">
-                <img th:src="${document.storageUrl}" class="max-w-full max-h-full object-contain shadow-sm bg-white" />
-            </div>
                  
             <div th:if="${document.fileType.name() == 'OTHER'}" class="text-center p-8 absolute inset-0 flex flex-col items-center justify-center">
                 <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
@@ -95,14 +91,13 @@
                 <a th:href="@{/document/{slug}/download(slug=${document.slug})}" class="btn btn-primary inline-block">Tải xuống ngay</a>
             </div>
         </div>
+
+        <div th:if="${document.fileType.name() == 'IMAGE'}" class="bg-gray-100 rounded-lg shadow-sm border border-divider w-full flex justify-center p-2 md:p-4">
+            <img th:src="${document.storageUrl}" class="w-full h-auto object-contain rounded" alt="Document image" />
+        </div>
     </main>
 
     <div th:replace="~{fragments/base :: footer}"></div>
     <div th:replace="~{fragments/base :: scripts}"></div>
-
-    <script>
-        // Update the button click handler to pass the ID
-        document.querySelector('button[onclick="openReportModal()"]').setAttribute('onclick', 'openReportModal(' + document.getElementById('reportDocumentId')?.value + ')');
-    </script>
 </body>
 </html>
