@@ -70,6 +70,31 @@
                 </a>
             </div>
         </div>
+
+        <!-- Viewer Container -->
+        <div class="bg-white rounded-lg shadow-sm border border-divider flex-grow relative min-h-[60vh] flex items-center justify-center overflow-hidden">
+            <iframe th:if="${document.fileType.name() == 'DOCX' or document.fileType.name() == 'PPTX'}" 
+                    th:src="'https://docs.google.com/viewer?url=' + ${document.storageUrl} + '&embedded=true'" 
+                    class="w-full h-full absolute inset-0 border-0">
+            </iframe>
+            
+            <iframe th:if="${document.fileType.name() == 'PDF'}" 
+                    th:src="${document.storageUrl} + '#toolbar=0'" 
+                    class="w-full h-full absolute inset-0 border-0">
+            </iframe>
+            
+            <div th:if="${document.fileType.name() == 'IMAGE'}" class="w-full h-full overflow-auto bg-gray-100 flex items-center justify-center p-4 absolute inset-0">
+                <img th:src="${document.storageUrl}" class="max-w-full max-h-full object-contain shadow-sm bg-white" />
+            </div>
+                 
+            <div th:if="${document.fileType.name() == 'OTHER'}" class="text-center p-8 absolute inset-0 flex flex-col items-center justify-center">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <p class="mb-4 text-gray-600 font-medium">Định dạng file này không hỗ trợ xem trực tiếp.</p>
+                <a th:href="@{/document/{slug}/download(slug=${document.slug})}" class="btn btn-primary inline-block">Tải xuống ngay</a>
+            </div>
+        </div>
     </main>
 
     <div th:replace="~{fragments/base :: footer}"></div>

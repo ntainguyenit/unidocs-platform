@@ -29,9 +29,9 @@ public class DocumentWebController {
         }
 
         documentService.incrementViews(doc.getId());
+        model.addAttribute("document", doc);
         
-        // Redirect directly to the Supabase S3 URL to view
-        return "redirect:" + doc.getStorageUrl();
+        return "document-view";
     }
 
     @GetMapping("/{slug}/download")
