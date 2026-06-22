@@ -95,13 +95,15 @@
                 <p class="text-gray-500">Hãy là người đầu tiên đóng góp tài liệu cho học phần này!</p>
             </div>
             
-            <div th:unless="${folders.empty}" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <a th:each="f : ${folders}" th:href="@{/course/{slug}(slug=${course.slug}, folder=${f})}" class="bg-white rounded-lg p-4 flex items-center gap-4 hover:-translate-y-1 hover:shadow-md transition-all group cursor-pointer border border-divider shadow-sm">
-                    <div class="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-lg flex items-center justify-center shrink-0 border border-yellow-100 group-hover:bg-yellow-100 transition-colors">
-                        <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
-                    </div>
-                    <div class="min-w-0">
-                        <h3 class="text-base font-bold text-gray-800 group-hover:text-primary transition-colors truncate" th:text="${f}">2022 - 2023</h3>
+            <div th:unless="${folders.empty}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 transition-all duration-300">
+                <a th:each="f : ${folders}" th:href="@{/course/{slug}(slug=${course.slug}, folder=${f})}" class="card p-4 group hover:-translate-y-1 hover:shadow-md transition-all cursor-pointer">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-base font-bold text-text group-hover:text-primary transition-colors truncate" th:text="${f}">2022 - 2023</h3>
+                        </div>
+                        <div class="text-gray-400 group-hover:text-primary">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </div>
                     </div>
                 </a>
             </div>
