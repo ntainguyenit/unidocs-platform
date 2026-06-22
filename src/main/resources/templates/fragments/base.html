@@ -258,37 +258,8 @@
                             behavior: 'smooth'
                         });
                     });
-                }
-
-                // Real-time Statistics Heartbeat
-                const totalEl = document.getElementById('totalVisitorsCount');
-                const onlineEl = document.getElementById('onlineUsersCount');
-                if (totalEl && onlineEl) {
-                    let sessionId = localStorage.getItem('unidocs_session_id');
-                    if (!sessionId) {
-                        sessionId = 'sess_' + Math.random().toString(36).substr(2, 9);
-                        localStorage.setItem('unidocs_session_id', sessionId);
-                    }
-                    
-                    let newVisitor = false;
-                    if (!localStorage.getItem('unidocs_has_visited')) {
-                        newVisitor = true;
-                        localStorage.setItem('unidocs_has_visited', 'true');
-                    }
-
-                    const fetchStats = () => {
-                        fetch(`/api/stats/ping?sessionId=${sessionId}&newVisitor=${newVisitor}`)
-                            .then(res => res.json())
-                            .then(data => {
-                                totalEl.textContent = data.total.toLocaleString('vi-VN');
-                                onlineEl.textContent = data.online.toLocaleString('vi-VN');
-                                newVisitor = false;
-                            })
-                            .catch(err => console.error('Failed to fetch stats', err));
-                    };
-
-                    fetchStats();
-                    setInterval(fetchStats, 15000);
+                        });
+                    });
                 }
             });
         </script>
@@ -391,24 +362,6 @@
             </div>
 
             <div class="flex flex-col lg:flex-row justify-between items-center border-t border-gray-200 pt-6 gap-4 text-sm text-gray-600">
-                <div id="siteStats" class="flex items-center gap-4 text-xs font-medium text-gray-500">
-                    <div class="flex items-center gap-1.5" title="Tổng số lượt truy cập">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
-                        <span id="totalVisitorsCount" class="font-bold text-gray-700 mr-1">--</span> người truy cập
-                    </div>
-                    <div class="w-px h-3 bg-gray-300"></div>
-                    <div class="flex items-center gap-1.5" title="Người đang trực tuyến">
-                        <span class="relative flex h-2.5 w-2.5 mr-1">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-                        </span>
-                        <span id="onlineUsersCount" class="font-bold text-green-600 mr-1">--</span> người đang trực tuyến
-                    </div>
-                </div>
-
                 <div class="text-center">
                     <p>&copy; <script>document.write(new Date().getFullYear())</script> UniDocs. Nền tảng chia sẻ tài liệu học tập.</p>
                     <div class="flex items-center justify-center gap-4 mt-2">

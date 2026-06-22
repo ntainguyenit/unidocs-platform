@@ -168,6 +168,20 @@ public class AdminController {
         return "redirect:/admin/documents";
     }
 
+    @PostMapping("/system/reset-db")
+    public String resetDatabase(RedirectAttributes redirectAttributes) {
+        try {
+            reportRepository.deleteAll();
+            documentRepository.deleteAll();
+            courseRepository.deleteAll();
+            facultyRepository.deleteAll();
+            redirectAttributes.addFlashAttribute("successMessage", "Đã xóa toàn bộ Khoa, Học phần và Tài liệu thành công! Bạn có thể bắt đầu Import file ZIP mới.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi xóa dữ liệu: " + e.getMessage());
+        }
+        return "redirect:/admin/documents";
+    }
+
     @PostMapping("/system/import-zip")
     public String importZip(@RequestParam("zipFile") org.springframework.web.multipart.MultipartFile zipFile, RedirectAttributes redirectAttributes) {
         try {
