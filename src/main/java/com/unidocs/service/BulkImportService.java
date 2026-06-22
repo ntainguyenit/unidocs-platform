@@ -120,7 +120,7 @@ public class BulkImportService {
 
     private Faculty upsertFaculty(String name, com.unidocs.domain.University university) {
         List<Faculty> existingFaculties = facultyRepository.findAll().stream()
-                .filter(f -> f.getName().trim().equalsIgnoreCase(name))
+                .filter(f -> f.getName().trim().equalsIgnoreCase(name.trim()))
                 .toList();
 
         if (!existingFaculties.isEmpty()) {
@@ -135,8 +135,8 @@ public class BulkImportService {
     }
 
     private Course upsertCourse(String name, Faculty faculty) {
-        List<Course> existingCourses = faculty.getCourses().stream()
-                .filter(c -> c.getName().trim().equalsIgnoreCase(name))
+        List<Course> existingCourses = courseRepository.findAll().stream()
+                .filter(c -> c.getFaculty().getId().equals(faculty.getId()) && c.getName().trim().equalsIgnoreCase(name.trim()))
                 .toList();
 
         if (!existingCourses.isEmpty()) {
@@ -147,9 +147,7 @@ public class BulkImportService {
         newCourse.setName(name);
         newCourse.setSlug(SlugGenerator.generateSlug(name) + "-" + UUID.randomUUID().toString().substring(0, 4));
         newCourse.setFaculty(faculty);
-        Course savedCourse = courseRepository.save(newCourse);
-        faculty.getCourses().add(savedCourse); // Add to the collection to prevent duplicates in the same transaction
-        return savedCourse;
+        return courseRepository.save(newCourse);
     }
 
     private void processDocument(java.io.InputStream is, String fileName, Course course, String folderName) throws Exception {

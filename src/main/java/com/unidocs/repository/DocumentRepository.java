@@ -21,6 +21,10 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     Optional<Document> findBySha256Hash(String hash);
     Optional<Document> findBySlug(String slug);
     List<Document> findByStatus(DocumentStatus status);
+
+    @org.springframework.data.jpa.repository.Query("SELECT d FROM Document d LEFT JOIN FETCH d.course WHERE d.status = :status")
+    List<Document> findByStatusWithCourse(@org.springframework.data.repository.query.Param("status") DocumentStatus status);
+
     Page<Document> findByStatusOrderByReliabilityScoreDescUploadedAtDesc(DocumentStatus status, Pageable pageable);
     
     // For dynamic sorting

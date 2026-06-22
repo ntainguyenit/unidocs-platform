@@ -27,7 +27,7 @@ public class SearchController {
         List<SearchResult> results = new ArrayList<>();
 
         // Lấy tất cả Course
-        List<Course> courses = courseRepository.findAll();
+        List<Course> courses = courseRepository.findAllWithFaculty();
         for (Course c : courses) {
             results.add(new SearchResult(
                     c.getName(),
@@ -37,7 +37,7 @@ public class SearchController {
         }
 
         // Lấy tất cả Document đã duyệt
-        List<Document> documents = documentRepository.findByStatus(DocumentStatus.APPROVED);
+        List<Document> documents = documentRepository.findByStatusWithCourse(DocumentStatus.APPROVED);
         for (Document d : documents) {
             results.add(new SearchResult(
                     d.getTitle(),

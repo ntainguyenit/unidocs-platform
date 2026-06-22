@@ -92,8 +92,8 @@
             </div>
         </div>
 
-        <div th:if="${document.fileType.name() == 'IMAGE'}" class="bg-gray-100 rounded-lg shadow-sm border border-divider w-full flex justify-center p-2 md:p-4">
-            <img th:src="${document.storageUrl}" class="w-full h-auto object-contain rounded" alt="Document image" />
+        <div th:if="${document.fileType.name() == 'IMAGE'}" class="bg-gray-100 rounded-lg shadow-sm border border-divider flex-grow relative min-h-[80vh] flex items-center justify-center p-2 md:p-4 overflow-hidden">
+            <img th:src="${document.storageUrl}" class="w-full h-full max-h-[80vh] object-contain rounded" alt="Document image" />
         </div>
     </main>
 
