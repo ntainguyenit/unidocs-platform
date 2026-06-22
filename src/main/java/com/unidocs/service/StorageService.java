@@ -21,6 +21,15 @@ public interface StorageService {
     String uploadFile(byte[] bytes, String filename, String contentType);
 
     /**
+     * Uploads a java.io.File to storage and returns its public URL
+     * @param file The file to upload
+     * @param filename The generated filename to save as
+     * @param contentType The content type of the file
+     * @return Public URL of the uploaded file
+     */
+    String uploadFile(java.io.File file, String filename, String contentType);
+
+    /**
      * Deletes a file from storage
      * @param filename The filename to delete
      */

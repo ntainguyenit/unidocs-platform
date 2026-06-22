@@ -153,67 +153,89 @@ public class BulkImportService {
     }
 
     private void processDocument(java.io.InputStream is, String fileName, Course course, String folderName) throws Exception {
-        byte[] fileBytes = is.readAllBytes();
-        if (fileBytes.length == 0) return;
-
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
-        byte[] hashBytes = digest.digest(fileBytes);
-        StringBuilder hexString = new StringBuilder();
-        for (byte b : hashBytes) {
-            String hex = Integer.toHexString(0xff & b);
-            if (hex.length() == 1) hexString.append('0');
-            hexString.append(hex);
-        }
-        String sha256Hash = hexString.toString();
-
-        Optional<Document> existingDoc = documentRepository.findBySha256Hash(sha256Hash);
-        if (existingDoc.isPresent()) {
-            log.info("Document already exists, skipping: {}", fileName);
-            return;
-        }
-
-        DocumentType fileType = determineType(fileName);
-        
-        String extension = "";
-        int extIndex = fileName.lastIndexOf(".");
-        if (extIndex > 0) {
-            extension = fileName.substring(extIndex);
-        }
-        String s3Key = UUID.randomUUID().toString() + extension;
-        
-        MultipartFile mockFile = new MockMultipartFile(fileBytes, fileName);
-        String storageUrl = storageService.uploadFile(mockFile, s3Key);
-
-        String thumbnailUrl = null;
-        if (fileType == DocumentType.PDF) {
-            java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(fileBytes);
-            byte[] thumbBytes = com.unidocs.util.PdfThumbnailUtil.generateThumbnail(bais);
-            if (thumbBytes != null) {
-                String thumbFilename = "thumb_" + UUID.randomUUID().toString() + ".jpg";
-                thumbnailUrl = storageService.uploadFile(thumbBytes, thumbFilename, "image/jpeg");
-            }
-        }
-
-        Document doc = new Document();
-        doc.setTitle(fileName.substring(0, fileName.lastIndexOf(".")));
-        doc.setFolderName(folderName);
-        doc.setSlug(UUID.randomUUID().toString().substring(0, 8) + "-" + System.currentTimeMillis());
-        doc.setFileType(fileType);
-        doc.setFileSize((long) fileBytes.length);
-        doc.setSha256Hash(sha256Hash);
-        doc.setStorageUrl(storageUrl);
-        doc.setThumbnailUrl(thumbnailUrl);
-        doc.setStatus(DocumentStatus.APPROVED);
-        doc.setUploaderIp("ADMIN_IMPORT");
-        doc.setUploadedAt(LocalDateTime.now());
-        doc.setCourse(course);
-
-        documentRepository.save(doc);
-
+        java.io.File entryTempFile = java.io.File.createTempFile("entry-", ".tmp");
         try {
-            Thread.sleep(200); // 200ms delay to prevent rate limits / Cloudflare blocking
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            try (java.io.FileOutputStream fos = new java.io.FileOutputStream(entryTempFile)) {
+                byte[] copyBuffer = new byte[8192];
+                int read;
+                while ((read = is.read(copyBuffer)) != -1) {
+                    fos.write(copyBuffer, 0, read);
+                }
+            }
+            
+            if (entryTempFile.length() == 0) return;
+
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            try (java.io.InputStream fileIs = new java.io.FileInputStream(entryTempFile)) {
+                byte[] hashBuffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = fileIs.read(hashBuffer)) != -1) {
+                    digest.update(hashBuffer, 0, bytesRead);
+                }
+            }
+            byte[] hashBytes = digest.digest();
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hashBytes) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            String sha256Hash = hexString.toString();
+
+            Optional<Document> existingDoc = documentRepository.findBySha256Hash(sha256Hash);
+            if (existingDoc.isPresent()) {
+                log.info("Document already exists, skipping: {}", fileName);
+                return;
+            }
+
+            DocumentType fileType = determineType(fileName);
+            
+            String extension = "";
+            int extIndex = fileName.lastIndexOf(".");
+            if (extIndex > 0) {
+                extension = fileName.substring(extIndex);
+            }
+            String s3Key = UUID.randomUUID().toString() + extension;
+            
+            String storageUrl = storageService.uploadFile(entryTempFile, s3Key, getContentType(fileName));
+
+            String thumbnailUrl = null;
+            if (fileType == DocumentType.PDF && entryTempFile.length() < 50_000_000) { // Limit thumbnail generation to PDFs < 50MB
+                try (java.io.InputStream bais = new java.io.FileInputStream(entryTempFile)) {
+                    byte[] thumbBytes = com.unidocs.util.PdfThumbnailUtil.generateThumbnail(bais);
+                    if (thumbBytes != null) {
+                        String thumbFilename = "thumb_" + UUID.randomUUID().toString() + ".jpg";
+                        thumbnailUrl = storageService.uploadFile(thumbBytes, thumbFilename, "image/jpeg");
+                    }
+                }
+            }
+
+            Document doc = new Document();
+            int dotIndex = fileName.lastIndexOf(".");
+            doc.setTitle(dotIndex > 0 ? fileName.substring(0, dotIndex) : fileName);
+            doc.setFolderName(folderName);
+            doc.setSlug(UUID.randomUUID().toString().substring(0, 8) + "-" + System.currentTimeMillis());
+            doc.setFileType(fileType);
+            doc.setFileSize(entryTempFile.length());
+            doc.setSha256Hash(sha256Hash);
+            doc.setStorageUrl(storageUrl);
+            doc.setThumbnailUrl(thumbnailUrl);
+            doc.setStatus(DocumentStatus.APPROVED);
+            doc.setUploaderIp("ADMIN_IMPORT");
+            doc.setUploadedAt(LocalDateTime.now());
+            doc.setCourse(course);
+
+            documentRepository.save(doc);
+
+            try {
+                Thread.sleep(200); // 200ms delay to prevent rate limits / Cloudflare blocking
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        } finally {
+            if (entryTempFile.exists()) {
+                entryTempFile.delete();
+            }
         }
     }
 
@@ -225,34 +247,16 @@ public class BulkImportService {
         return DocumentType.PDF;
     }
 
-    // A simple Mock implementation of MultipartFile for passing to StorageService
-    private static class MockMultipartFile implements MultipartFile {
-        private final byte[] content;
-        private final String name;
-
-        public MockMultipartFile(byte[] content, String name) {
-            this.content = content;
-            this.name = name;
-        }
-
-        @Override public String getName() { return name; }
-        @Override public String getOriginalFilename() { return name; }
-        @Override public String getContentType() { 
-            String lowerName = name.toLowerCase();
-            if (lowerName.endsWith(".pdf")) return "application/pdf";
-            if (lowerName.endsWith(".png")) return "image/png";
-            if (lowerName.matches(".*\\.(jpg|jpeg)$")) return "image/jpeg";
-            if (lowerName.endsWith(".gif")) return "image/gif";
-            if (lowerName.endsWith(".webp")) return "image/webp";
-            if (lowerName.endsWith(".svg")) return "image/svg+xml";
-            if (lowerName.endsWith(".docx")) return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-            if (lowerName.endsWith(".doc")) return "application/msword";
-            return "application/octet-stream"; 
-        }
-        @Override public boolean isEmpty() { return content.length == 0; }
-        @Override public long getSize() { return content.length; }
-        @Override public byte[] getBytes() throws IOException { return content; }
-        @Override public InputStream getInputStream() throws IOException { return new ByteArrayInputStream(content); }
-        @Override public void transferTo(File dest) throws IOException, IllegalStateException { throw new UnsupportedOperationException(); }
+    private String getContentType(String name) {
+        String lowerName = name.toLowerCase();
+        if (lowerName.endsWith(".pdf")) return "application/pdf";
+        if (lowerName.endsWith(".png")) return "image/png";
+        if (lowerName.matches(".*\\.(jpg|jpeg)$")) return "image/jpeg";
+        if (lowerName.endsWith(".gif")) return "image/gif";
+        if (lowerName.endsWith(".webp")) return "image/webp";
+        if (lowerName.endsWith(".svg")) return "image/svg+xml";
+        if (lowerName.endsWith(".docx")) return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+        if (lowerName.endsWith(".doc")) return "application/msword";
+        return "application/octet-stream"; 
     }
 }

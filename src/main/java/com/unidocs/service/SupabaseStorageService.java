@@ -102,6 +102,28 @@ public class SupabaseStorageService implements StorageService {
     }
 
     @Override
+    public String uploadFile(java.io.File file, String filename, String contentType) {
+        if (s3Client == null) {
+            return "http://localhost:8080/dummy-storage/" + filename;
+        }
+
+        try {
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(filename)
+                    .contentType(contentType)
+                    .contentDisposition("inline; filename=\"" + filename + "\"")
+                    .build();
+
+            s3Client.putObject(putObjectRequest, RequestBody.fromFile(file));
+            
+            return endpoint.replace("/s3", "/object/public/") + bucket + "/" + filename;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to upload file to Supabase S3: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public void deleteFile(String filename) {
         if (s3Client == null) {
             return; // Dummy mode
