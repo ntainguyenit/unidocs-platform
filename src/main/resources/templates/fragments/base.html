@@ -298,32 +298,35 @@
             <div class="absolute inset-0 backdrop-blur-sm" style="background-color: rgba(0,0,0,0.5);" onclick="closeManualModal()"></div>
             <div class="bg-white rounded-xl shadow-2xl z-10 w-full max-w-2xl p-6 transition-all duration-300" id="manualModalContent">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-4 mb-4">
-                    <h3 class="text-xl font-bold text-gray-900 lang-text" data-vi="Hướng dẫn sử dụng UniDocs" data-en="UniDocs User Guide">Hướng dẫn sử dụng UniDocs</h3>
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900 lang-text" data-vi="Hướng dẫn sử dụng UniDocs" data-en="UniDocs User Guide">Hướng dẫn sử dụng UniDocs</h3>
+                        <p class="text-sm text-primary font-medium mt-1">Chúc bạn một ngày tốt lành!</p>
+                    </div>
                     <button onclick="closeManualModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
                 <div class="space-y-4 max-h-[60vh] overflow-y-auto text-gray-600 text-sm leading-relaxed pr-2">
-                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                    <div class="p-4 rounded-lg border border-divider">
                         <h4 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
                             <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                            <span class="lang-text" data-vi="1. Tìm kiếm tài liệu" data-en="1. Search Documents">1. Tìm kiếm tài liệu</span>
+                            <span class="lang-text" data-vi="1. Xem tài liệu" data-en="1. View Documents">1. Xem tài liệu</span>
                         </h4>
-                        <p class="lang-text" data-vi="Sử dụng thanh tìm kiếm ở góc trên cùng để tìm nhanh học phần hoặc đề thi. Bạn cũng có thể duyệt qua danh sách các Trường Đại học ở trang chủ để tìm theo cấu trúc cây." data-en="Use the search bar at the top to quickly find courses or exams. You can also browse through the list of Universities on the homepage.">Sử dụng thanh tìm kiếm ở góc trên cùng để tìm nhanh học phần hoặc đề thi. Bạn cũng có thể duyệt qua danh sách các Trường Đại học ở trang chủ để tìm theo cấu trúc cây.</p>
+                        <p class="lang-text" data-vi="Bấm vào thẻ bên dưới -> Khoa -> Học phần -> Xem chi tiết/Tải xuống. Hoặc, sử dụng THANH TÌM KIẾM ở góc trên cùng bên phải để tìm nhanh học phần hoặc đề thi nhé!" data-en="Click on the cards below -> Faculty -> Course -> View/Download. Or, use the SEARCH BAR at the top right to quickly find courses or exams!">Bấm vào thẻ bên dưới -> Khoa -> Học phần -> Xem chi tiết/Tải xuống. Hoặc, sử dụng THANH TÌM KIẾM ở góc trên cùng bên phải để tìm nhanh học phần hoặc đề thi nhé!</p>
                     </div>
-                    <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+                    <div class="p-4 rounded-lg border border-divider">
                         <h4 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
                             <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                            <span class="lang-text" data-vi="2. Đóng góp & Tải xuống" data-en="2. Contribute & Download">2. Đóng góp & Tải xuống</span>
+                            <span class="lang-text" data-vi="2. Đóng góp tài liệu" data-en="2. Contribute Documents">2. Đóng góp tài liệu</span>
                         </h4>
-                        <p class="lang-text" data-vi="Tại mỗi học phần, bạn có thể tải lên tài liệu mới để chia sẻ với cộng đồng. Các tài liệu đều có thể xem trước trực tiếp trên web trước khi quyết định tải về." data-en="At each course page, you can upload new documents to share with the community. All documents can be previewed directly on the web before downloading.">Tại mỗi học phần, bạn có thể tải lên tài liệu mới để chia sẻ với cộng đồng. Các tài liệu đều có thể xem trước trực tiếp trên web trước khi quyết định tải về.</p>
+                        <p class="lang-text" data-vi="Tại mỗi học phần, bạn có thể tải lên tài liệu mới để chia sẻ với cộng đồng miễn phí mà KHÔNG CẦN ĐĂNG NHẬP" data-en="At each course page, you can upload new documents to share with the community for free WITHOUT LOGGING IN">Tại mỗi học phần, bạn có thể tải lên tài liệu mới để chia sẻ với cộng đồng miễn phí mà KHÔNG CẦN ĐĂNG NHẬP</p>
                     </div>
-                    <div class="bg-orange-50 p-4 rounded-lg border border-orange-100">
+                    <div class="p-4 rounded-lg border border-divider">
                         <h4 class="font-bold text-gray-900 mb-2 flex items-center gap-2">
                             <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                            <span class="lang-text" data-vi="3. Tiện ích sinh viên" data-en="3. Student Utilities">3. Tiện ích sinh viên</span>
+                            <span class="lang-text" data-vi="3. Khác" data-en="3. Other">3. Khác</span>
                         </h4>
-                        <p class="lang-text" data-vi="UniDocs cung cấp nhiều công cụ mạnh mẽ: Phòng thi mô phỏng (giúp làm quen áp lực thời gian), Tạo thời khóa biểu (kéo thả và xuất PDF), và cập nhật thông báo liên tục từ nhà trường." data-en="UniDocs provides many powerful tools: Mock Exam Room (helps to get used to time pressure), Timetable Creator (drag and drop and export PDF), and continuous updates from the university.">UniDocs cung cấp nhiều công cụ mạnh mẽ: Phòng thi mô phỏng (giúp làm quen áp lực thời gian), Tạo thời khóa biểu (kéo thả và xuất PDF), và cập nhật thông báo liên tục từ nhà trường.</p>
+                        <p class="lang-text" data-vi="UniDocs cập nhật thông báo liên tục từ nhà trường và cung cấp cho bạn nhiều tiện ích miễn phí (Bạn có thể kéo xuống dưới để trải nghiệm nhé)" data-en="UniDocs updates notifications continuously from the university and provides you with many free utilities (You can scroll down to experience)">UniDocs cập nhật thông báo liên tục từ nhà trường và cung cấp cho bạn nhiều tiện ích miễn phí (Bạn có thể kéo xuống dưới để trải nghiệm nhé)</p>
                     </div>
                 </div>
                 <div class="mt-6">
