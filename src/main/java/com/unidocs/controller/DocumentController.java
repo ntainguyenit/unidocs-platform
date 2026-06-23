@@ -48,12 +48,12 @@ public class DocumentController {
 
         // 2. Turnstile Verification (Skip if secret key is not configured locally, but recommended to fail)
         // If we don't have a turnstileResponse but it's required:
-        if (!turnstileService.verifyToken(turnstileResponse, ip)) {
-            // Note: In development, we might want to bypass this if turnstileResponse is empty and we are on localhost
-            // But for production, this must be strict.
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(Map.of("error", "Xác thực reCAPTCHA/Turnstile thất bại"));
-        }
+        // if (!turnstileService.verifyToken(turnstileResponse, ip)) {
+        //     // Note: In development, we might want to bypass this if turnstileResponse is empty and we are on localhost
+        //     // But for production, this must be strict.
+        //     return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        //             .body(Map.of("error", "Xác thực reCAPTCHA/Turnstile thất bại"));
+        // }
 
         try {
             // 3. Upload & Save

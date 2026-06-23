@@ -181,7 +181,7 @@
                                 </h3>
                                 <div class="mt-2">
                                     <p class="text-xs md:text-sm text-gray-500">
-                                        Chọn file định dạng PDF, DOCX, PPTX hoặc định dạng Ảnh (PNG, JPG,...). Dung lượng tối đa <span class="font-bold text-red-500">5MB</span>. Tài liệu sẽ được kiểm duyệt trước khi hiển thị.
+                                        Chọn file định dạng PDF, DOCX, PPTX hoặc định dạng Ảnh (PNG, JPG,...). Dung lượng tối đa <span class="font-bold text-red-500">20MB</span>. Tài liệu sẽ được kiểm duyệt trước khi hiển thị.
                                     </p>
                                     <p class="text-xs text-blue-600 mt-1 italic">
                                         *Lưu ý: Nếu tài liệu là ảnh chụp (scan), vui lòng nén file hoặc gộp thành file PDF để giảm dung lượng trước khi tải lên.
@@ -191,7 +191,7 @@
                                     
                                     <div class="mt-4">
                                         <label class="block text-sm font-medium text-gray-700">Chọn File</label>
-                                        <input type="file" id="file" name="file" accept=".pdf,.docx,.pptx,image/*" required
+                                        <input type="file" id="file" name="file" accept=".pdf,.doc,.docx,.ppt,.pptx,image/*" required
                                             class="mt-1 block w-full text-sm text-gray-500
                                             file:mr-4 file:py-2 file:px-4
                                             file:rounded-full file:border-0
@@ -260,8 +260,8 @@
             // Basic validation
             if (fileInput.files.length === 0) return;
             const file = fileInput.files[0];
-            if (file.size > 5 * 1024 * 1024) {
-                showResult('Dung lượng file vượt quá 5MB! Vui lòng nén file lại.', 'error');
+            if (file.size > 20 * 1024 * 1024) {
+                showResult('Dung lượng file vượt quá 20MB! Vui lòng nén file lại.', 'error');
                 return;
             }
 
@@ -278,9 +278,19 @@
             // Use XMLHttpRequest to track progress
             submitBtn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Đang xử lý...';
 
-            const formData = new FormData(event.target);
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', '/api/document/upload', true);
+            xhr.open('POST', '/api/documents/upload', true);
+
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const percentComplete = Math.round((e.loaded / e.total) * 100);
+                    progressBar.style.width = percentComplete + '%';
+                    progressPercent.innerText = percentComplete + '%';
+                    if (percentComplete === 100) {
+                        document.getElementById('progressText').innerText = 'Đang xử lý tài liệu...';
+                    }
+                }
+            };
 
             xhr.onload = function() {
                 submitBtn.disabled = false;

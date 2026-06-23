@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Góp ý - Admin UniDocs</title>
+    <link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}">
+    <link th:href="@{/css/output.css}" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sse-new-item {
+            animation: highlightFade 3s ease-out forwards;
+        }
+        @keyframes highlightFade {
+            0% { background-color: #f0fdf4; border-color: #22c55e; }
+            100% { background-color: white; border-color: #e5e7eb; }
+        }
+        /* Toast notification */
+        #toastContainer {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .toast {
+            min-width: 250px;
+            background-color: #1f2937;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            animation: slideIn 0.3s ease-out forwards;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen font-sans antialiased">
+    
+    <header class="bg-primary text-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-6">
+                    <a th:href="@{/admin/documents}" class="flex items-center gap-2 text-xl font-bold tracking-tight text-white hover:text-gray-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        UniDocs Admin
+                    </a>
+                    <nav class="hidden md:flex items-center gap-4">
+                        <a th:href="@{/admin/documents}" class="text-sm text-blue-100 hover:text-white transition-colors">Quản lý Tài liệu</a>
+                        <a th:href="@{/admin/reports}" class="text-sm text-blue-100 hover:text-white transition-colors">Quản lý Báo cáo</a>
+                        <a th:href="@{/admin/duplicates}" class="text-sm text-blue-100 hover:text-white transition-colors">Trùng lặp</a>
+                        <a th:href="@{/admin/statistics}" class="text-sm text-blue-100 hover:text-white transition-colors">Thống kê</a>
+                        <a th:href="@{/admin/feedback}" class="text-sm text-white font-semibold border-b-2 border-white pb-1">Quản lý Góp ý</a>
+                    </nav>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a th:href="@{/}" class="text-sm text-blue-100 hover:text-white transition-colors flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Về trang web
+                    </a>
+                    <form th:action="@{/admin/logout}" method="post" class="inline">
+                        <button type="submit" class="text-sm font-medium bg-red-600 hover:bg-red-700 text-white py-1.5 px-3 rounded transition-colors">
+                            Đăng xuất
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-2xl font-bold text-gray-900">Quản lý Góp ý & Phản hồi</h1>
+            <div class="flex items-center gap-4">
+                <span class="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full border border-green-200">
+                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                    Live
+                </span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-sm border border-divider">
+            <div class="p-6 border-b border-gray-200">
+                <p class="text-gray-600 text-sm">Tất cả góp ý từ sinh viên sẽ được hiển thị ngay lập tức (Real-time). Bạn có thể phản hồi trực tiếp tại đây.</p>
+            </div>
+            
+            <div class="p-6">
+                <div id="feedbackList" class="space-y-6">
+                    <div th:each="fb : ${feedbacks}" th:id="'fb-' + ${fb.id}" class="border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm transition-colors relative">
+                        <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <div class="font-bold text-gray-900 text-sm" th:text="${fb.authorName}">Người dùng</div>
+                                    <div class="text-xs text-gray-500" th:text="${#temporals.format(fb.createdAt, 'dd/MM/yyyy HH:mm')}">Thời gian</div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 items-center">
+                                <span th:if="${fb.replyContent != null}" class="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded">Đã phản hồi</span>
+                                <span th:unless="${fb.replyContent != null}" class="text-xs font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Chờ xử lý</span>
+                                <button th:onclick="'deleteFeedback(' + ${fb.id} + ')'" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-1.5 rounded transition-colors ml-2" title="Xóa góp ý">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="p-4">
+                            <p class="text-gray-800 whitespace-pre-wrap" th:text="${fb.content}">Nội dung</p>
+                        </div>
+                        
+                        <!-- Reply Section -->
+                        <div th:id="'reply-section-' + ${fb.id}" class="p-4 bg-gray-50 border-t border-gray-200">
+                            <!-- If already replied -->
+                            <div th:if="${fb.replyContent != null}" th:id="'reply-display-' + ${fb.id}">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mt-1">
+                                        <i class="fas fa-shield-alt"></i>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="font-bold text-sm text-blue-800">Admin</span>
+                                            <span class="text-xs text-blue-600" th:text="${#temporals.format(fb.repliedAt, 'dd/MM/yyyy HH:mm')}">Thời gian</span>
+                                        </div>
+                                        <p class="text-sm text-blue-900 whitespace-pre-wrap" th:text="${fb.replyContent}">Phản hồi</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- If not replied yet -->
+                            <div th:unless="${fb.replyContent != null}" th:id="'reply-form-container-' + ${fb.id}">
+                                <form th:onsubmit="'submitReply(event, ' + ${fb.id} + ')'" class="flex flex-col gap-2">
+                                    <textarea th:id="'reply-input-' + ${fb.id}" rows="2" required placeholder="Nhập phản hồi của Admin..." class="w-full text-sm px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"></textarea>
+                                    <div class="flex justify-end">
+                                        <button type="submit" th:id="'reply-btn-' + ${fb.id}" class="bg-blue-600 text-white text-sm font-medium py-1.5 px-4 rounded hover:bg-blue-700 transition-colors">
+                                            Trả lời
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(feedbacks)}" id="emptyState" class="text-center py-10 text-gray-500">
+                        Chưa có góp ý nào.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <script>
+        const feedbackList = document.getElementById('feedbackList');
+        const emptyState = document.getElementById('emptyState');
+        const toastContainer = document.getElementById('toastContainer');
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <span><i class="fas fa-bell text-yellow-400 mr-2"></i> ${message}</span>
+                <button onclick="this.parentElement.remove()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+            `;
+            toastContainer.appendChild(toast);
+            setTimeout(() => {
+                if (toast.parentElement) toast.remove();
+            }, 5000);
+        }
+
+        // Helper to format date
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+        }
+
+        // Handle Admin Reply Submit
+        function submitReply(e, id) {
+            e.preventDefault();
+            const input = document.getElementById('reply-input-' + id);
+            const btn = document.getElementById('reply-btn-' + id);
+            const content = input.value.trim();
+            if (!content) return;
+
+            btn.disabled = true;
+            btn.innerHTML = 'Đang gửi...';
+
+            fetch(`/admin/api/feedback/${id}/reply`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ replyContent: content })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                    btn.disabled = false;
+                    btn.innerHTML = 'Trả lời';
+                }
+                // If success, the SSE will trigger and update the UI automatically.
+            })
+            .catch(error => {
+                alert('Lỗi kết nối đến máy chủ.');
+                btn.disabled = false;
+                btn.innerHTML = 'Trả lời';
+            });
+        }
+
+        // Handle Admin Delete
+        function deleteFeedback(id) {
+            if (!confirm("Bạn có chắc chắn muốn xóa góp ý này khỏi hệ thống?")) return;
+            
+            fetch(`/admin/api/feedback/${id}`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    showToast("Đã xóa góp ý thành công");
+                    // DO NOT remove from DOM here, wait for SSE DELETE_FEEDBACK event
+                    // This ensures all connected admins see the deletion
+                }
+            })
+            .catch(error => {
+                alert('Lỗi kết nối đến máy chủ.');
+            });
+        }
+
+        // Initialize Server-Sent Events (SSE)
+        const eventSource = new EventSource('/admin/api/feedback/stream');
+
+        eventSource.addEventListener('NEW_FEEDBACK', function(e) {
+            const fb = JSON.parse(e.data);
+            
+            // Check if already exists
+            if (document.getElementById('fb-' + fb.id)) return;
+
+            if (emptyState) emptyState.style.display = 'none';
+
+            // Show Toast Notification
+            showToast('Có góp ý mới từ ' + fb.authorName);
+
+            const fbDiv = document.createElement('div');
+            fbDiv.id = 'fb-' + fb.id;
+            fbDiv.className = 'border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm transition-colors sse-new-item mb-6 relative';
+            
+            fbDiv.innerHTML = `
+                <div class="p-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-gray-900 text-sm">${fb.authorName}</div>
+                            <div class="text-xs text-gray-500">${formatDate(fb.createdAt)}</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-2 items-center">
+                        <span class="text-xs font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Chờ xử lý</span>
+                        <button onclick="deleteFeedback(${fb.id})" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-1.5 rounded transition-colors ml-2" title="Xóa góp ý">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <p class="text-gray-800 whitespace-pre-wrap">${fb.content}</p>
+                </div>
+                <div id="reply-section-${fb.id}" class="p-4 bg-gray-50 border-t border-gray-200">
+                    <div id="reply-form-container-${fb.id}">
+                        <form onsubmit="submitReply(event, ${fb.id})" class="flex flex-col gap-2">
+                            <textarea id="reply-input-${fb.id}" rows="2" required placeholder="Nhập phản hồi của Admin..." class="w-full text-sm px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"></textarea>
+                            <div class="flex justify-end">
+                                <button type="submit" id="reply-btn-${fb.id}" class="bg-blue-600 text-white text-sm font-medium py-1.5 px-4 rounded hover:bg-blue-700 transition-colors">
+                                    Trả lời
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            
+            feedbackList.insertBefore(fbDiv, feedbackList.firstChild);
+        });
+
+        eventSource.addEventListener('REPLY_FEEDBACK', function(e) {
+            const fb = JSON.parse(e.data);
+            const section = document.getElementById('reply-section-' + fb.id);
+            if (section && fb.replyContent) {
+                // Update Badge to "Đã phản hồi"
+                const badgeContainer = document.querySelector(`#fb-${fb.id} .bg-gray-50 > div:nth-child(2) span:first-child`);
+                if (badgeContainer) {
+                    badgeContainer.outerHTML = `<span class="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded">Đã phản hồi</span>`;
+                }
+
+                // Render reply
+                section.innerHTML = `
+                    <div id="reply-display-${fb.id}" class="sse-new-item bg-white p-2 rounded">
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mt-1">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="font-bold text-sm text-blue-800">Admin</span>
+                                    <span class="text-xs text-blue-600">${formatDate(fb.repliedAt)}</span>
+                                </div>
+                                <p class="text-sm text-blue-900 whitespace-pre-wrap">${fb.replyContent}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        eventSource.addEventListener('DELETE_FEEDBACK', function(e) {
+            const fb = JSON.parse(e.data);
+            const item = document.getElementById('fb-' + fb.id);
+            if (item) {
+                // Animate removal
+                item.style.transition = 'opacity 0.5s, height 0.5s';
+                item.style.opacity = '0';
+                setTimeout(() => item.remove(), 500);
+            }
+        });
+
+        eventSource.onerror = function(err) {
+            console.error("SSE Error:", err);
+        };
+    </script>
+</body>
+</html>

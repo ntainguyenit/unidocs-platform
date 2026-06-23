@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .permitAll()
             )
             // Disable CSRF for API endpoints (like upload) which are used publicly
-            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"));
+            .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**", "/admin/api/**"));
 
         return http.build();
     }

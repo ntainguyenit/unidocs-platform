@@ -11,6 +11,7 @@ import com.unidocs.repository.CourseRepository;
 import com.unidocs.repository.DocumentRepository;
 import com.unidocs.repository.FacultyRepository;
 import com.unidocs.repository.DocumentReportRepository;
+import com.unidocs.service.FeedbackService;
 import java.util.List;
 
 @Controller
@@ -25,6 +26,7 @@ public class AdminController {
     private final CourseRepository courseRepository;
     private final DocumentRepository documentRepository;
     private final DocumentReportRepository reportRepository;
+    private final FeedbackService feedbackService;
 
     public AdminController(DocumentService documentService, 
                            com.unidocs.service.ReportService reportService,
@@ -33,7 +35,8 @@ public class AdminController {
                            FacultyRepository facultyRepository,
                            CourseRepository courseRepository,
                            DocumentRepository documentRepository,
-                           DocumentReportRepository reportRepository) {
+                           DocumentReportRepository reportRepository,
+                           FeedbackService feedbackService) {
         this.documentService = documentService;
         this.reportService = reportService;
         this.deduplicationService = deduplicationService;
@@ -42,6 +45,7 @@ public class AdminController {
         this.courseRepository = courseRepository;
         this.documentRepository = documentRepository;
         this.reportRepository = reportRepository;
+        this.feedbackService = feedbackService;
     }
 
     @GetMapping("/documents")
@@ -249,5 +253,11 @@ public class AdminController {
         // For chart data (documents per faculty could be useful, but let's just pass simple stats for now)
         
         return "admin/statistics";
+    }
+
+    @GetMapping("/feedback")
+    public String viewFeedback(Model model) {
+        model.addAttribute("feedbacks", feedbackService.getAllFeedbacks());
+        return "admin/feedback";
     }
 }

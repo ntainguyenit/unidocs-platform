@@ -26,21 +26,24 @@ public class HomeController {
     private final com.unidocs.repository.CourseRepository courseRepository;
     private final com.unidocs.service.DocumentService documentService;
     private final com.unidocs.service.NotificationService notificationService;
+    private final com.unidocs.service.FeedbackService feedbackService;
 
     public HomeController(UniversityRepository universityRepository, FacultyRepository facultyRepository, 
                           com.unidocs.repository.CourseRepository courseRepository, com.unidocs.service.DocumentService documentService,
-                          com.unidocs.service.NotificationService notificationService) {
+                          com.unidocs.service.NotificationService notificationService, com.unidocs.service.FeedbackService feedbackService) {
         this.universityRepository = universityRepository;
         this.facultyRepository = facultyRepository;
         this.courseRepository = courseRepository;
         this.documentService = documentService;
         this.notificationService = notificationService;
+        this.feedbackService = feedbackService;
     }
 
     @GetMapping("/")
     public String index(Model model) {
         model.addAttribute("universities", universityRepository.findAll());
         model.addAttribute("notifications", notificationService.getRecentNotifications());
+        model.addAttribute("feedbacks", feedbackService.getAllFeedbacks());
         return "index";
     }
 
