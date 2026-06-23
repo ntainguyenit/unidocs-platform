@@ -49,8 +49,11 @@ public class HomeController {
         University uni = universityRepository.findBySlug(slug)
             .orElseThrow(() -> new IllegalArgumentException("Invalid university slug:" + slug));
         
+        java.util.List<com.unidocs.domain.Faculty> sortedFaculties = uni.getFaculties().stream()
+                .sorted(java.util.Comparator.comparing(com.unidocs.domain.Faculty::getName))
+                .toList();
         model.addAttribute("university", uni);
-        model.addAttribute("faculties", uni.getFaculties());
+        model.addAttribute("faculties", sortedFaculties);
         return "university";
     }
 
@@ -59,8 +62,11 @@ public class HomeController {
         com.unidocs.domain.Faculty faculty = facultyRepository.findBySlug(slug)
             .orElseThrow(() -> new IllegalArgumentException("Invalid faculty slug:" + slug));
         
+        java.util.List<com.unidocs.domain.Course> sortedCourses = faculty.getCourses().stream()
+                .sorted(java.util.Comparator.comparing(com.unidocs.domain.Course::getName))
+                .toList();
         model.addAttribute("faculty", faculty);
-        model.addAttribute("courses", faculty.getCourses());
+        model.addAttribute("courses", sortedCourses);
         return "faculty";
     }
 

@@ -83,6 +83,9 @@
             const container = document.getElementById('dataContainer');
             if(container) {
                 initialOrder = Array.from(container.children);
+                if (window.innerWidth < 768) {
+                    toggleView('list');
+                }
             }
         });
 

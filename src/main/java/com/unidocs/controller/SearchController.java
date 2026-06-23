@@ -16,13 +16,16 @@ public class SearchController {
 
     private final CourseRepository courseRepository;
     private final DocumentRepository documentRepository;
+    private final com.unidocs.repository.FacultyRepository facultyRepository;
 
-    public SearchController(CourseRepository courseRepository, DocumentRepository documentRepository) {
+    public SearchController(CourseRepository courseRepository, DocumentRepository documentRepository, com.unidocs.repository.FacultyRepository facultyRepository) {
         this.courseRepository = courseRepository;
         this.documentRepository = documentRepository;
+        this.facultyRepository = facultyRepository;
     }
 
     @GetMapping("/api/search")
+    @org.springframework.transaction.annotation.Transactional(readOnly = true)
     public List<SearchResult> search() {
         List<SearchResult> results = new ArrayList<>();
 
@@ -36,13 +39,24 @@ public class SearchController {
             ));
         }
 
+        // Lấy tất cả Khoa
+        List<com.unidocs.domain.Faculty> faculties = facultyRepository.findAll();
+        for (com.unidocs.domain.Faculty f : faculties) {
+            results.add(new SearchResult(
+                    f.getName(),
+                    "/faculty/" + f.getSlug(),
+                    "Khoa trực thuộc - " + (f.getUniversity() != null ? f.getUniversity().getName() : "")
+            ));
+        }
+
         // Lấy tất cả Document đã duyệt
         List<Document> documents = documentRepository.findByStatusWithCourse(DocumentStatus.APPROVED);
         for (Document d : documents) {
+            String folder = d.getFolderName() != null ? " - Năm học: " + d.getFolderName() : "";
             results.add(new SearchResult(
                     d.getTitle(),
-                    "/document/" + d.getId(),
-                    "Tài liệu - Học phần: " + (d.getCourse() != null ? d.getCourse().getName() : "")
+                    "/document/" + d.getSlug() + "/view",
+                    "Tài liệu" + folder + " - Học phần: " + (d.getCourse() != null ? d.getCourse().getName() : "")
             ));
         }
 

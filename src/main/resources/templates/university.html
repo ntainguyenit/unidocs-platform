@@ -82,12 +82,14 @@
     </main>
 
     <script>
-        // Sort items initially based on initial DOM order to store it
         let initialOrder = [];
         document.addEventListener("DOMContentLoaded", () => {
             const container = document.getElementById('dataContainer');
             if(container) {
                 initialOrder = Array.from(container.children);
+                if (window.innerWidth < 768) {
+                    toggleView('list');
+                }
             }
         });
 
