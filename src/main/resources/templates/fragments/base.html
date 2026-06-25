@@ -4,6 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title}">UniDocs</title>
+
+    <!-- SEO & GEO AI Mode Meta Tags -->
+    <meta name="description" content="Nền tảng chia sẻ tài liệu học tập, đề thi đại học hàng đầu dành cho sinh viên. Khám phá các khóa học, tài liệu ôn thi HUSC, UniDocs.">
+    <meta name="keywords" content="uni doc, unidoc, uni docs, unidocs, husc, đại học khoa học huế, tài liệu đại học, đề thi đại học, chia sẻ tài liệu">
+    <meta name="author" content="UniDocs Team">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph for Social Media -->
+    <meta property="og:title" th:content="${title}">
+    <meta property="og:description" content="Nền tảng chia sẻ tài liệu học tập, đề thi đại học dành cho sinh viên HUSC">
+    <meta property="og:image" th:content="@{/favicon.svg}">
+    <meta property="og:url" content="https://unidocs.pages.dev">
+    <meta property="og:type" content="website">
+
+    <!-- JSON-LD Structured Data for GEO AI -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "UniDocs",
+      "alternateName": ["uni doc", "unidoc", "uni docs", "husc"],
+      "url": "https://unidocs.pages.dev",
+      "description": "Nền tảng chia sẻ tài liệu học tập, đề thi đại học dành cho sinh viên HUSC"
+    }
+    </script>
+
     <link th:href="@{/css/output.css}" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" th:href="@{/favicon.svg}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -369,6 +395,11 @@
                         <a th:href="@{/privacy}" class="hover:text-primary transition-colors font-medium text-xs">Chính sách bảo mật</a>
                     </div>
                 </div>
+            </div>
+            
+            <!-- Ẩn text cho SEO -->
+            <div class="hidden text-transparent" aria-hidden="true">
+                uni doc unidoc uni docs unidocs husc đại học khoa học huế tài liệu học tập đề thi
             </div>
         </div>
 

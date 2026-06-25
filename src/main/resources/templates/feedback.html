@@ -203,6 +203,15 @@
             }
         });
 
+        eventSource.addEventListener('DELETE_REPLY', function(e) {
+            const fb = JSON.parse(e.data);
+            const replyContainer = document.getElementById('reply-' + fb.id);
+            if (replyContainer) {
+                replyContainer.innerHTML = '';
+                replyContainer.className = '';
+            }
+        });
+
         eventSource.onerror = function(err) {
             console.error("SSE Error:", err);
             // Browser will automatically attempt to reconnect

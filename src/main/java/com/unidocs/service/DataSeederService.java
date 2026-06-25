@@ -69,11 +69,7 @@ public class DataSeederService {
             University uni = allUnis.isEmpty() ? null : allUnis.get(0);
             
             if (uni == null) {
-                uni = new University();
-                uni.setName("Trường Đại học Khoa học");
-                uni.setShortName("ĐHKH");
-                uni.setSlug("truong-dai-hoc-khoa-hoc");
-                uni = universityRepository.save(uni);
+                throw new RuntimeException("No university found in DB to link faculties");
             }
 
             for (DriveItem facultyItem : faculties) {

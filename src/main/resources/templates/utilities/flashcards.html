@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/base :: head('Thẻ nhớ thông minh (Flashcards) | UniDocs')}"></div>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .flip-card {
+            perspective: 1000px;
+            width: 100%;
+            height: 300px;
+        }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+        }
+        .flip-card-front {
+            background-color: #ffffff;
+            color: #111827;
+        }
+        .flip-card-back {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen text-text">
+    
+    <div th:replace="~{fragments/base :: navbar}"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <a th:href="@{/}" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg border border-blue-100 mb-6 shadow-sm w-fit">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Quay lại
+        </a>
+        
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-xl shadow-sm border border-divider p-6 md:p-8 mb-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-3 bg-purple-100 text-purple-600 rounded-lg shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Thẻ nhớ thông minh</h1>
+                        <p class="text-gray-500 mt-1">Học thuật bằng Flashcards với thuật toán lặp lại ngắt quãng.</p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- Form thêm Flashcard -->
+                    <div class="md:col-span-1">
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <h3 class="font-bold text-gray-900 mb-4">Thêm Thẻ Mới</h3>
+                            <form id="cardForm" class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Mặt trước (Câu hỏi)</label>
+                                    <textarea id="cardQuestion" required rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 outline-none" placeholder="Nhập câu hỏi..."></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Mặt sau (Câu trả lời)</label>
+                                    <textarea id="cardAnswer" required rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-purple-500 focus:border-purple-500 outline-none" placeholder="Nhập câu trả lời..."></textarea>
+                                </div>
+                                <button type="submit" class="w-full bg-primary hover:bg-primary-dark text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                    Thêm Thẻ
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Khu vực Học Flashcards -->
+                    <div class="md:col-span-2">
+                        <div id="learningArea" class="hidden flex-col items-center">
+                            <div class="w-full flex justify-between items-center mb-4 text-sm font-medium text-gray-500">
+                                <span>Thẻ <span id="currentCardIndex">1</span> / <span id="totalCards">1</span></span>
+                                <button onclick="deleteCurrentCard()" class="text-red-500 hover:text-red-700 transition-colors">
+                                    <i class="fas fa-trash mr-1"></i>Xóa thẻ này
+                                </button>
+                            </div>
+
+                            <!-- Thẻ Flashcard -->
+                            <div class="flip-card" id="flashcard" onclick="flipCard()">
+                                <div class="flip-card-inner">
+                                    <div class="flip-card-front text-xl font-medium" id="frontText">
+                                        Câu hỏi
+                                    </div>
+                                    <div class="flip-card-back text-lg" id="backText">
+                                        Trả lời
+                                    </div>
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-4 text-center">Click vào thẻ để lật</p>
+
+                            <!-- Điều hướng -->
+                            <div class="flex justify-center gap-4 mt-6">
+                                <button onclick="prevCard()" class="px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg font-medium transition-colors">
+                                    <i class="fas fa-arrow-left mr-2"></i>Trước
+                                </button>
+                                <button onclick="nextCard()" class="px-6 py-2 bg-primary hover:bg-primary-dark text-white rounded-lg font-medium transition-colors">
+                                    Tiếp theo<i class="fas fa-arrow-right ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="emptyArea" class="h-full flex flex-col items-center justify-center text-center p-8 border-2 border-dashed border-gray-300 rounded-xl">
+                            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-400 mb-4">
+                                <i class="fas fa-layer-group text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold text-gray-900 mb-2">Chưa có thẻ nào</h3>
+                            <p class="text-gray-500 text-sm">Hãy thêm một vài thẻ ở cột bên trái để bắt đầu học nhé.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+
+    <script>
+        let cards = JSON.parse(localStorage.getItem('unidocs_flashcards')) || [];
+        let currentIndex = 0;
+
+        function saveCards() {
+            localStorage.setItem('unidocs_flashcards', JSON.stringify(cards));
+        }
+
+        function updateUI() {
+            if (cards.length === 0) {
+                document.getElementById('learningArea').classList.add('hidden');
+                document.getElementById('learningArea').classList.remove('flex');
+                document.getElementById('emptyArea').classList.remove('hidden');
+                document.getElementById('emptyArea').classList.add('flex');
+                return;
+            }
+
+            document.getElementById('emptyArea').classList.add('hidden');
+            document.getElementById('emptyArea').classList.remove('flex');
+            document.getElementById('learningArea').classList.remove('hidden');
+            document.getElementById('learningArea').classList.add('flex');
+
+            document.getElementById('totalCards').innerText = cards.length;
+            document.getElementById('currentCardIndex').innerText = currentIndex + 1;
+
+            const card = cards[currentIndex];
+            document.getElementById('frontText').innerText = card.question;
+            document.getElementById('backText').innerText = card.answer;
+            
+            // Reset lật bài khi đổi thẻ mới
+            document.getElementById('flashcard').classList.remove('flipped');
+        }
+
+        function flipCard() {
+            document.getElementById('flashcard').classList.toggle('flipped');
+        }
+
+        function nextCard() {
+            if (cards.length === 0) return;
+            currentIndex = (currentIndex + 1) % cards.length;
+            updateUI();
+        }
+
+        function prevCard() {
+            if (cards.length === 0) return;
+            currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+            updateUI();
+        }
+
+        function deleteCurrentCard() {
+            if(confirm('Bạn muốn xóa thẻ này?')) {
+                cards.splice(currentIndex, 1);
+                if (currentIndex >= cards.length) {
+                    currentIndex = Math.max(0, cards.length - 1);
+                }
+                saveCards();
+                updateUI();
+            }
+        }
+
+        document.getElementById('cardForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const question = document.getElementById('cardQuestion').value;
+            const answer = document.getElementById('cardAnswer').value;
+
+            if (question && answer) {
+                cards.push({
+                    question: question,
+                    answer: answer
+                });
+                
+                document.getElementById('cardQuestion').value = '';
+                document.getElementById('cardAnswer').value = '';
+                
+                // Mới thêm thì chuyển đến thẻ đó
+                currentIndex = cards.length - 1;
+                saveCards();
+                updateUI();
+            }
+        });
+
+        // Hỗ trợ phím mũi tên
+        document.addEventListener('keydown', function(e) {
+            if(document.activeElement.tagName === 'TEXTAREA') return;
+            
+            if (e.key === 'ArrowRight') {
+                nextCard();
+            } else if (e.key === 'ArrowLeft') {
+                prevCard();
+            } else if (e.key === ' ' || e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                flipCard();
+            }
+        });
+
+        updateUI();
+    </script>
+</body>
+</html>

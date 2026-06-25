@@ -39,6 +39,16 @@ public class UtilitiesController {
         return "utilities/lucky-wheel";
     }
 
+    @GetMapping("/exam-countdown")
+    public String examCountdown() {
+        return "utilities/exam-countdown";
+    }
+
+    @GetMapping("/flashcards")
+    public String flashcards() {
+        return "utilities/flashcards";
+    }
+
     @GetMapping("/bmi-calculator")
     public String bmiCalculator() {
         return "utilities/bmi-calculator";

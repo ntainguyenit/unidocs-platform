@@ -160,31 +160,7 @@ public class AdminController {
         return "redirect:/admin/reports";
     }
 
-    @PostMapping("/system/deduplicate")
-    public String deduplicateSystem(RedirectAttributes redirectAttributes) {
-        try {
-            deduplicationService.deduplicateFaculties();
-            deduplicationService.deduplicateCourses();
-            redirectAttributes.addFlashAttribute("successMessage", "Dọn dẹp và gộp dữ liệu trùng lặp thành công.");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi dọn dẹp: " + e.getMessage());
-        }
-        return "redirect:/admin/documents";
-    }
 
-    @PostMapping("/system/reset-db")
-    public String resetDatabase(RedirectAttributes redirectAttributes) {
-        try {
-            reportRepository.deleteAll();
-            documentRepository.deleteAll();
-            courseRepository.deleteAll();
-            facultyRepository.deleteAll();
-            redirectAttributes.addFlashAttribute("successMessage", "Đã xóa toàn bộ Khoa, Học phần và Tài liệu thành công! Bạn có thể bắt đầu Import file ZIP mới.");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Lỗi xóa dữ liệu: " + e.getMessage());
-        }
-        return "redirect:/admin/documents";
-    }
 
     @PostMapping("/system/import-zip")
     public String importZip(@RequestParam("zipFile") org.springframework.web.multipart.MultipartFile zipFile, RedirectAttributes redirectAttributes) {

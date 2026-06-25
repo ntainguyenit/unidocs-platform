@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments/base :: head('Đếm ngược mùa thi | UniDocs')}"></div>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 flex flex-col min-h-screen text-text">
+    
+    <div th:replace="~{fragments/base :: navbar}"></div>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <a th:href="@{/}" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg border border-blue-100 mb-6 shadow-sm w-fit">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Quay lại
+        </a>
+        
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-xl shadow-sm border border-divider p-6 md:p-8 mb-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-3 bg-red-100 text-red-600 rounded-lg shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5.33c0 1.06.422 2.078 1.172 2.828L9.586 16.586A4 4 0 0110 19.414V20H4M20 4v5.33c0 1.06-.422 2.078-1.172 2.828l-4.414 4.428A4 4 0 0014 19.414V20h6M4 4h16" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Đếm ngược mùa thi</h1>
+                        <p class="text-gray-500 mt-1">Lên lịch thi và tạo bộ đếm ngược thời gian đầy động lực.</p>
+                    </div>
+                </div>
+
+                <!-- Form Thêm lịch thi -->
+                <form id="examForm" class="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-8 flex flex-col md:flex-row gap-4 items-end">
+                    <div class="flex-1 w-full">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tên môn thi / Sự kiện</label>
+                        <input type="text" id="examName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 outline-none" placeholder="VD: Giải tích 1">
+                    </div>
+                    <div class="flex-1 w-full">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Thời gian thi</label>
+                        <input type="datetime-local" id="examDate" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 outline-none">
+                    </div>
+                    <button type="submit" class="w-full md:w-auto bg-primary hover:bg-primary-dark text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                        Thêm lịch thi
+                    </button>
+                </form>
+
+                <!-- Bộ đếm gần nhất -->
+                <div id="closestExamContainer" class="hidden text-center py-10 bg-gradient-to-br from-red-50 to-orange-50 rounded-xl border border-red-100 mb-8">
+                    <h2 class="text-xl text-red-800 font-semibold mb-2">Sắp tới: <span id="closestName" class="font-bold text-red-600 text-2xl"></span></h2>
+                    <p class="text-red-700 mb-6" id="closestDateStr"></p>
+                    <div class="flex justify-center gap-4 text-center">
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-red-100 min-w-[80px]">
+                            <div class="text-4xl font-bold text-gray-900" id="countDays">0</div>
+                            <div class="text-sm text-gray-500 font-medium mt-1">Ngày</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-red-100 min-w-[80px]">
+                            <div class="text-4xl font-bold text-gray-900" id="countHours">0</div>
+                            <div class="text-sm text-gray-500 font-medium mt-1">Giờ</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-red-100 min-w-[80px]">
+                            <div class="text-4xl font-bold text-gray-900" id="countMins">0</div>
+                            <div class="text-sm text-gray-500 font-medium mt-1">Phút</div>
+                        </div>
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-red-100 min-w-[80px]">
+                            <div class="text-4xl font-bold text-gray-900" id="countSecs">0</div>
+                            <div class="text-sm text-gray-500 font-medium mt-1">Giây</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Danh sách lịch thi -->
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Danh sách lịch thi của bạn</h3>
+                    <div id="examList" class="space-y-3">
+                        <!-- Danh sách render bằng JS -->
+                    </div>
+                    <div id="emptyList" class="text-center py-6 text-gray-500 hidden">
+                        Chưa có lịch thi nào được thêm.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div th:replace="~{fragments/base :: footer}"></div>
+
+    <script>
+        let exams = JSON.parse(localStorage.getItem('unidocs_exams')) || [];
+        let countdownInterval;
+
+        function saveExams() {
+            localStorage.setItem('unidocs_exams', JSON.stringify(exams));
+        }
+
+        function renderExams() {
+            const listEl = document.getElementById('examList');
+            const emptyEl = document.getElementById('emptyList');
+            
+            listEl.innerHTML = '';
+            
+            // Xóa các lịch thi đã qua quá 1 ngày
+            const now = new Date().getTime();
+            exams = exams.filter(e => new Date(e.date).getTime() > now - 86400000);
+            
+            // Sắp xếp theo thời gian gần nhất
+            exams.sort((a, b) => new Date(a.date) - new Date(b.date));
+            saveExams();
+
+            if (exams.length === 0) {
+                emptyEl.classList.remove('hidden');
+                document.getElementById('closestExamContainer').classList.add('hidden');
+                if (countdownInterval) clearInterval(countdownInterval);
+                return;
+            } else {
+                emptyEl.classList.add('hidden');
+            }
+
+            exams.forEach((exam, index) => {
+                const examTime = new Date(exam.date).getTime();
+                const isPast = now > examTime;
+                
+                const div = document.createElement('div');
+                div.className = `flex justify-between items-center p-4 rounded-lg border ${index === 0 ? 'border-red-300 bg-red-50/30' : 'border-gray-200 bg-white'}`;
+                
+                let timeStr = new Date(exam.date).toLocaleString('vi-VN');
+                
+                div.innerHTML = `
+                    <div>
+                        <h4 class="font-bold text-gray-900 ${isPast ? 'line-through text-gray-500' : ''}">${exam.name} ${index === 0 ? '<span class="ml-2 text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full">Tiếp theo</span>' : ''}</h4>
+                        <p class="text-sm text-gray-500">${timeStr}</p>
+                    </div>
+                    <button onclick="deleteExam('${exam.id}')" class="text-red-400 hover:text-red-600 p-2" title="Xóa">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                `;
+                listEl.appendChild(div);
+            });
+
+            startCountdown();
+        }
+
+        function deleteExam(id) {
+            if(confirm('Xóa lịch thi này?')) {
+                exams = exams.filter(e => e.id !== id);
+                renderExams();
+            }
+        }
+
+        function startCountdown() {
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            const upcomingExams = exams.filter(e => new Date(e.date).getTime() > new Date().getTime());
+            
+            if (upcomingExams.length === 0) {
+                document.getElementById('closestExamContainer').classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('closestExamContainer').classList.remove('hidden');
+            const nextExam = upcomingExams[0];
+            const examTime = new Date(nextExam.date).getTime();
+            
+            document.getElementById('closestName').innerText = nextExam.name;
+            document.getElementById('closestDateStr').innerText = new Date(nextExam.date).toLocaleString('vi-VN');
+
+            countdownInterval = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = examTime - now;
+
+                if (distance < 0) {
+                    clearInterval(countdownInterval);
+                    renderExams();
+                    return;
+                }
+
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById('countDays').innerText = days;
+                document.getElementById('countHours').innerText = hours.toString().padStart(2, '0');
+                document.getElementById('countMins').innerText = minutes.toString().padStart(2, '0');
+                document.getElementById('countSecs').innerText = seconds.toString().padStart(2, '0');
+            }, 1000);
+        }
+
+        document.getElementById('examForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('examName').value;
+            const date = document.getElementById('examDate').value;
+
+            if (name && date) {
+                exams.push({
+                    id: Date.now().toString(),
+                    name: name,
+                    date: date
+                });
+                
+                document.getElementById('examName').value = '';
+                document.getElementById('examDate').value = '';
+                
+                renderExams();
+            }
+        });
+
+        // Initialize minimum date for input
+        const now = new Date();
+        now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+        document.getElementById('examDate').min = now.toISOString().slice(0,16);
+
+        renderExams();
+    </script>
+</body>
+</html>

@@ -94,6 +94,21 @@ public class FeedbackService {
         broadcastEvent("DELETE_FEEDBACK", deletedFeedback);
     }
 
+    @Transactional
+    public Feedback deleteReply(Long id) {
+        Feedback feedback = feedbackRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy góp ý"));
+        
+        feedback.setReplyContent(null);
+        feedback.setRepliedAt(null);
+        
+        Feedback savedFeedback = feedbackRepository.save(feedback);
+        
+        broadcastEvent("DELETE_REPLY", savedFeedback);
+        
+        return savedFeedback;
+    }
+
     private void broadcastEvent(String eventName, Feedback feedback) {
         for (SseEmitter emitter : emitters) {
             try {

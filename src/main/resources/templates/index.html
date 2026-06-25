@@ -290,12 +290,43 @@
 
                 <!-- Vòng quay may mắn -->
                 <a th:href="@{/utilities/lucky-wheel}" class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer block group">
-                    <div>
-                        <i class="far fa-circle-notch text-primary text-2xl"></i>
+                    <div class="p-3 bg-gray-100 text-gray-900 rounded-lg shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                        </svg>
                     </div>
                     <div>
                         <h3 class="font-bold text-gray-900 group-hover:text-primary transition-colors">Vòng quay may mắn</h3>
                         <p class="text-sm text-gray-500 mt-1">Nhập danh sách và quay ngẫu nhiên. Lý tưởng để chia nhóm.</p>
+                    </div>
+                </a>
+
+                <!-- Đếm ngược mùa thi -->
+                <a th:href="@{/utilities/exam-countdown}" class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer block group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg uppercase tracking-wider shadow-sm z-10">NEW</div>
+                    <div class="p-3 bg-gray-100 text-gray-900 rounded-lg shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5.33c0 1.06.422 2.078 1.172 2.828L9.586 16.586A4 4 0 0110 19.414V20H4M20 4v5.33c0 1.06-.422 2.078-1.172 2.828l-4.414 4.428A4 4 0 0014 19.414V20h6M4 4h16" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 group-hover:text-primary transition-colors">Đếm ngược mùa thi</h3>
+                        <p class="text-sm text-gray-500 mt-1">Lên lịch thi và tạo bộ đếm ngược thời gian đầy động lực.</p>
+                    </div>
+                </a>
+
+                <!-- Thẻ nhớ thông minh -->
+                <a th:href="@{/utilities/flashcards}" class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer block group relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg uppercase tracking-wider shadow-sm z-10">NEW</div>
+                    <div class="p-3 bg-gray-100 text-gray-900 rounded-lg shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 group-hover:text-primary transition-colors">Thẻ nhớ thông minh</h3>
+                        <p class="text-sm text-gray-500 mt-1">Học thuật bằng Flashcards với thuật toán lặp lại ngắt quãng.</p>
                     </div>
                 </a>
             </div>
@@ -303,9 +334,12 @@
 
         <!-- Góp ý & Phản hồi -->
         <div class="mb-12">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
-                Góp ý & Phản hồi
-            </h2>
+            <div class="border-b border-gray-200 pb-4 mb-6">
+                <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                    Góp ý & Phản hồi
+                    <span class="text-gray-500 text-sm font-normal">(Giúp cải thiện UniDocs tốt hơn)</span>
+                </h2>
+            </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Form Góp Ý -->
                 <div class="lg:col-span-1">

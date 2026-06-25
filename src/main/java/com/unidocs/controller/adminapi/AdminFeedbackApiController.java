@@ -35,6 +35,18 @@ public class AdminFeedbackApiController {
             return ResponseEntity.internalServerError().body(Map.of("error", "Có lỗi xảy ra khi phản hồi"));
         }
     }
+    @DeleteMapping("/{id}/reply")
+    public ResponseEntity<?> deleteReply(@PathVariable Long id) {
+        try {
+            Feedback feedback = feedbackService.deleteReply(id);
+            return ResponseEntity.ok(Map.of("message", "Đã xóa phản hồi", "feedback", feedback));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", "Có lỗi xảy ra khi xóa phản hồi"));
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteFeedback(@PathVariable Long id) {
         try {

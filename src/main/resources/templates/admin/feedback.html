@@ -124,16 +124,26 @@
                         <div th:id="'reply-section-' + ${fb.id}" class="p-4 bg-gray-50 border-t border-gray-200">
                             <!-- If already replied -->
                             <div th:if="${fb.replyContent != null}" th:id="'reply-display-' + ${fb.id}">
-                                <div class="flex items-start gap-3">
-                                    <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mt-1">
-                                        <i class="fas fa-shield-alt"></i>
-                                    </div>
-                                    <div>
-                                        <div class="flex items-center gap-2 mb-1">
-                                            <span class="font-bold text-sm text-blue-800">Admin</span>
-                                            <span class="text-xs text-blue-600" th:text="${#temporals.format(fb.repliedAt, 'dd/MM/yyyy HH:mm')}">Thời gian</span>
+                                <div class="flex items-start justify-between gap-3">
+                                    <div class="flex items-start gap-3">
+                                        <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mt-1 shrink-0">
+                                            <i class="fas fa-shield-alt"></i>
                                         </div>
-                                        <p class="text-sm text-blue-900 whitespace-pre-wrap" th:text="${fb.replyContent}">Phản hồi</p>
+                                        <div>
+                                            <div class="flex items-center gap-2 mb-1">
+                                                <span class="font-bold text-sm text-blue-800">Admin</span>
+                                                <span class="text-xs text-blue-600" th:text="${#temporals.format(fb.repliedAt, 'dd/MM/yyyy HH:mm')}">Thời gian</span>
+                                            </div>
+                                            <p th:id="'reply-content-text-' + ${fb.id}" class="text-sm text-blue-900 whitespace-pre-wrap" th:text="${fb.replyContent}">Phản hồi</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-2 shrink-0">
+                                        <button th:onclick="'editReply(' + ${fb.id} + ')'" class="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-1.5 rounded transition-colors" title="Sửa phản hồi">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button th:onclick="'deleteReply(' + ${fb.id} + ')'" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-1.5 rounded transition-colors" title="Xóa phản hồi">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -243,6 +253,37 @@
             });
         }
 
+        function deleteReply(id) {
+            if (!confirm("Bạn có chắc chắn muốn xóa phản hồi này?")) return;
+            
+            fetch(`/admin/api/feedback/${id}/reply`, {
+                method: 'DELETE',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) alert(data.error);
+                else showToast("Đã xóa phản hồi thành công");
+            })
+            .catch(error => alert('Lỗi kết nối đến máy chủ.'));
+        }
+
+        function editReply(id) {
+            const section = document.getElementById('reply-section-' + id);
+            const textElement = document.getElementById('reply-content-text-' + id);
+            if (!section || !textElement) return;
+
+            const currentText = textElement.innerText;
+            
+            section.innerHTML = `
+                <form onsubmit="submitReply(event, ${id})" class="flex flex-col gap-2">
+                    <textarea id="reply-input-${id}" rows="2" required class="w-full text-sm px-3 py-2 border border-blue-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors">${currentText}</textarea>
+                    <div class="flex justify-end">
+                        <button type="submit" id="reply-btn-${id}" class="bg-blue-600 text-white text-sm font-medium py-1.5 px-4 rounded hover:bg-blue-700 transition-colors">Lưu thay đổi</button>
+                    </div>
+                </form>
+            `;
+        }
+
         // Initialize Server-Sent Events (SSE)
         const eventSource = new EventSource('/admin/api/feedback/stream');
 
@@ -312,16 +353,26 @@
                 // Render reply
                 section.innerHTML = `
                     <div id="reply-display-${fb.id}" class="sse-new-item bg-white p-2 rounded">
-                        <div class="flex items-start gap-3">
-                            <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mt-1">
-                                <i class="fas fa-shield-alt"></i>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2 mb-1">
-                                    <span class="font-bold text-sm text-blue-800">Admin</span>
-                                    <span class="text-xs text-blue-600">${formatDate(fb.repliedAt)}</span>
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="flex items-start gap-3">
+                                <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mt-1 shrink-0">
+                                    <i class="fas fa-shield-alt"></i>
                                 </div>
-                                <p class="text-sm text-blue-900 whitespace-pre-wrap">${fb.replyContent}</p>
+                                <div>
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="font-bold text-sm text-blue-800">Admin</span>
+                                        <span class="text-xs text-blue-600">${formatDate(fb.repliedAt)}</span>
+                                    </div>
+                                    <p id="reply-content-text-${fb.id}" class="text-sm text-blue-900 whitespace-pre-wrap">${fb.replyContent}</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 shrink-0">
+                                <button onclick="editReply(${fb.id})" class="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-1.5 rounded transition-colors" title="Sửa phản hồi">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button onclick="deleteReply(${fb.id})" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-1.5 rounded transition-colors" title="Xóa phản hồi">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -337,6 +388,32 @@
                 item.style.transition = 'opacity 0.5s, height 0.5s';
                 item.style.opacity = '0';
                 setTimeout(() => item.remove(), 500);
+            }
+        });
+
+        eventSource.addEventListener('DELETE_REPLY', function(e) {
+            const fb = JSON.parse(e.data);
+            const section = document.getElementById('reply-section-' + fb.id);
+            if (section) {
+                // Update Badge to "Chờ xử lý"
+                const badgeContainer = document.querySelector(`#fb-${fb.id} .bg-gray-50 > div:nth-child(2) span:first-child`);
+                if (badgeContainer) {
+                    badgeContainer.outerHTML = `<span class="text-xs font-medium bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Chờ xử lý</span>`;
+                }
+
+                // Render form back
+                section.innerHTML = `
+                    <div id="reply-form-container-${fb.id}">
+                        <form onsubmit="submitReply(event, ${fb.id})" class="flex flex-col gap-2 mt-2">
+                            <textarea id="reply-input-${fb.id}" rows="2" required placeholder="Nhập phản hồi của Admin..." class="w-full text-sm px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"></textarea>
+                            <div class="flex justify-end">
+                                <button type="submit" id="reply-btn-${fb.id}" class="bg-blue-600 text-white text-sm font-medium py-1.5 px-4 rounded hover:bg-blue-700 transition-colors">
+                                    Trả lời
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                `;
             }
         });
 

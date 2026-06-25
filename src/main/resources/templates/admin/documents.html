@@ -41,18 +41,7 @@
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-2xl font-bold text-gray-900">Quản lý Tài liệu</h1>
             <div class="flex gap-3">
-                <form th:action="@{/admin/system/deduplicate}" method="post" onsubmit="return confirm('Hệ thống sẽ dọn dẹp các Khoa và Học phần trùng lặp, chuyển tài liệu về Học phần chính. Bạn có chắc chắn muốn thực hiện?');">
-                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-gray-700 font-medium rounded hover:bg-gray-50 transition-colors">
-                        <svg class="w-5 h-5 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                        Dọn dẹp Trùng lặp
-                    </button>
-                </form>
-                <form th:action="@{/admin/system/reset-db}" method="post" onsubmit="return confirm('CẢNH BÁO: Hành động này sẽ XÓA TOÀN BỘ Khoa, Học phần và Tài liệu trên hệ thống. Không thể hoàn tác. Bạn có chắc chắn muốn xóa không?');">
-                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-red-300 bg-red-50 text-red-700 font-medium rounded hover:bg-red-100 transition-colors">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        Xóa toàn bộ dữ liệu
-                    </button>
-                </form>
+
                 <button type="button" onclick="document.getElementById('importModal').classList.remove('hidden')" class="inline-flex items-center px-4 py-2 bg-primary text-white font-medium rounded hover:bg-blue-700 transition-colors cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
