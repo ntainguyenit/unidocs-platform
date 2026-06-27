@@ -38,10 +38,10 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Value("${admin.username}")
+    @Value("${admin.username:admin}")
     private String adminUsername;
 
-    @Value("${admin.password}")
+    @Value("${admin.password:changeme}")
     private String adminPassword;
 
     @Bean
