@@ -35,7 +35,7 @@ public class SearchController {
             results.add(new SearchResult(
                     c.getName(),
                     "/course/" + c.getSlug(),
-                    "Học phần - Khoa " + (c.getFaculty() != null ? c.getFaculty().getName() : "")
+                    c.getFaculty() != null ? c.getFaculty().getName() : ""
             ));
         }
 
@@ -46,17 +46,6 @@ public class SearchController {
                     f.getName(),
                     "/faculty/" + f.getSlug(),
                     "Khoa trực thuộc - " + (f.getUniversity() != null ? f.getUniversity().getName() : "")
-            ));
-        }
-
-        // Lấy tất cả Document đã duyệt
-        List<Document> documents = documentRepository.findByStatusWithCourse(DocumentStatus.APPROVED);
-        for (Document d : documents) {
-            String folder = d.getFolderName() != null ? " - Năm học: " + d.getFolderName() : "";
-            results.add(new SearchResult(
-                    d.getTitle(),
-                    "/document/" + d.getSlug() + "/view",
-                    "Tài liệu" + folder + " - Học phần: " + (d.getCourse() != null ? d.getCourse().getName() : "")
             ));
         }
 

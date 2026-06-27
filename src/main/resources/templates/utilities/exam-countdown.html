@@ -9,23 +9,16 @@
     <div th:replace="~{fragments/base :: navbar}"></div>
 
     <main class="flex-grow container mx-auto px-4 py-8">
-        <a th:href="@{/}" class="inline-flex items-center text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg border border-blue-100 mb-6 shadow-sm w-fit">
+        <a th:href="@{/#utilities}" class="inline-flex items-center whitespace-nowrap text-sm text-blue-600 hover:text-blue-800 font-medium transition-colors bg-blue-50 hover:bg-blue-100 px-4 py-2 rounded-lg border border-blue-100 mb-6 shadow-sm w-fit">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
             Quay lại
         </a>
         
         <div class="max-w-4xl mx-auto">
             <div class="bg-white rounded-xl shadow-sm border border-divider p-6 md:p-8 mb-8">
-                <div class="flex items-center gap-3 mb-6">
-                    <div class="p-3 bg-red-100 text-red-600 rounded-lg shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5.33c0 1.06.422 2.078 1.172 2.828L9.586 16.586A4 4 0 0110 19.414V20H4M20 4v5.33c0 1.06-.422 2.078-1.172 2.828l-4.414 4.428A4 4 0 0014 19.414V20h6M4 4h16" />
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Đếm ngược mùa thi</h1>
-                        <p class="text-gray-500 mt-1">Lên lịch thi và tạo bộ đếm ngược thời gian đầy động lực.</p>
-                    </div>
+                <div class="mb-6">
+                    <h1 class="text-2xl md:text-3xl font-bold text-gray-900">Đếm ngược mùa thi</h1>
+                    <p class="text-gray-500 mt-1">Lên lịch thi và tạo bộ đếm ngược thời gian đầy động lực.</p>
                 </div>
 
                 <!-- Form Thêm lịch thi -->
@@ -84,11 +77,17 @@
     <div th:replace="~{fragments/base :: footer}"></div>
 
     <script>
-        let exams = JSON.parse(localStorage.getItem('unidocs_exams')) || [];
+        let exams = [];
+        try {
+            const stored = localStorage.getItem('unidocs_exams');
+            if (stored) exams = JSON.parse(decodeURIComponent(atob(stored)));
+        } catch(e) {
+            try { exams = JSON.parse(localStorage.getItem('unidocs_exams')) || []; } catch(e){}
+        }
         let countdownInterval;
 
         function saveExams() {
-            localStorage.setItem('unidocs_exams', JSON.stringify(exams));
+            localStorage.setItem('unidocs_exams', btoa(encodeURIComponent(JSON.stringify(exams))));
         }
 
         function renderExams() {

@@ -52,16 +52,17 @@
 <body>
     <header th:fragment="navbar" class="bg-primary text-white shadow-md sticky top-0 z-40">
         <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
-            <a th:href="@{/}" class="text-2xl font-bold tracking-wider flex items-center gap-2 shrink-0">
+            <a th:href="@{/}" class="text-2xl font-bold tracking-wider flex items-center gap-2 shrink-0 order-1">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
                 UniDocs
             </a>
-            <div class="flex items-center gap-4 flex-grow justify-end max-w-3xl">
-                <div id="realtimeDate" class="hidden md:block text-sm text-blue-50 font-medium whitespace-nowrap opacity-90"></div>
-                <div class="relative group w-full max-w-lg" id="searchContainer">
-                    <input type="text" id="searchInput" placeholder="Tìm kiếm học phần, đề thi..." class="w-full px-4 py-2 pr-10 rounded text-text focus:outline-none focus:ring-2 focus:ring-blue-300" autocomplete="off">
+            
+            <div class="order-2 flex flex-col md:flex-row items-end md:items-center justify-end w-full md:w-auto gap-2 md:gap-4 flex-grow">
+                <div id="realtimeDate" class="text-sm text-blue-50 font-medium whitespace-nowrap opacity-90 text-right"></div>
+                <div class="relative group w-full md:max-w-lg" id="searchContainer">
+                    <input type="text" id="searchInput" name="query" aria-label="Tìm kiếm tên học phần" placeholder="Nhập tên học phần (VD: Lập Trình Nâng Cao, Báo In,...)" class="w-full px-4 py-2 pr-10 rounded text-text focus:outline-none focus:ring-2 focus:ring-blue-300" autocomplete="off">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute right-3 top-2.5 text-gray-400 pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
@@ -90,7 +91,7 @@
                     <div class="p-6 space-y-4">
                         <input type="hidden" id="reportDocumentId" name="documentId" value="">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Lý do báo cáo:</label>
+                            <label for="reportType" class="block text-sm font-medium text-gray-700 mb-2">Lý do báo cáo:</label>
                             <select id="reportType" name="reportType" required class="w-full form-input rounded-md border-gray-300 focus:border-red-500 focus:ring focus:ring-red-200">
                                 <option value="BROKEN_LINK">Lỗi tập tin / Không tải được</option>
                                 <option value="VIOLATION">Vi phạm bản quyền / Nội dung xấu</option>
@@ -98,7 +99,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Chi tiết (Tùy chọn):</label>
+                            <label for="reportMessage" class="block text-sm font-medium text-gray-700 mb-2">Chi tiết (Tùy chọn):</label>
                             <textarea id="reportMessage" name="message" rows="3" class="w-full form-input rounded-md border-gray-300 focus:border-red-500 focus:ring focus:ring-red-200" placeholder="Mô tả thêm về lỗi..."></textarea>
                         </div>
                     </div>
@@ -217,9 +218,20 @@
                         const a = document.createElement('a');
                         a.href = item.url;
                         a.className = 'block px-4 py-3 hover:bg-blue-50 border-b border-gray-100 last:border-0 transition-colors text-left';
+                        
+                        let titleHTML = item.title;
+                        let subtitleHTML = item.subtitle;
+                        if (query) {
+                            const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                            const regex = new RegExp(`(${escapedQuery})`, 'gi');
+                            const replaceSpan = '<span class="text-blue-600 font-bold">$1</span>';
+                            titleHTML = item.title.replace(regex, replaceSpan);
+                            subtitleHTML = item.subtitle.replace(regex, replaceSpan);
+                        }
+
                         a.innerHTML = `
-                            <div class="font-semibold text-text">${item.title}</div>
-                            <div class="text-xs text-gray-500 mt-1">${item.subtitle}</div>
+                            <div class="font-semibold text-text">${titleHTML}</div>
+                            <div class="text-xs text-gray-500 mt-1">${subtitleHTML}</div>
                         `;
                         searchResults.appendChild(a);
                     });
@@ -392,6 +404,7 @@
                     <p>&copy; <script>document.write(new Date().getFullYear())</script> UniDocs. Nền tảng chia sẻ tài liệu học tập.</p>
                     <div class="flex items-center justify-center gap-4 mt-2">
                         <a th:href="@{/terms}" class="hover:text-primary transition-colors font-medium text-xs">Điều khoản sử dụng</a>
+                        <span class="text-gray-400">|</span>
                         <a th:href="@{/privacy}" class="hover:text-primary transition-colors font-medium text-xs">Chính sách bảo mật</a>
                     </div>
                 </div>

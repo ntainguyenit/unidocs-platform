@@ -1,5 +1,6 @@
 package com.unidocs.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,11 +38,17 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Value("${admin.username}")
+    private String adminUsername;
+
+    @Value("${admin.password}")
+    private String adminPassword;
+
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails admin = User.builder()
-            .username("admin")
-            .password("{noop}admin123")
+            .username(adminUsername)
+            .password("{noop}" + adminPassword)
             .roles("ADMIN")
             .build();
         return new InMemoryUserDetailsManager(admin);

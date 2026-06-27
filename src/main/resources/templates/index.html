@@ -96,9 +96,11 @@
         </div>
 
         <div class="mb-12">
-            <div class="flex justify-between items-end mb-6 border-b border-divider pb-2">
-                <h2 class="text-2xl text-text">Thông báo từ nhà trường <span class="text-gray-500 text-sm font-normal">(Tổng hợp 5 thông báo mới nhất)</span></h2>
-                <a href="https://ums.husc.edu.vn/" target="_blank" class="text-primary hover:text-primary-dark font-medium text-sm transition-colors">Xem tất cả &rarr;</a>
+            <div class="flex justify-between items-center border-b border-gray-200 pb-4 mb-6">
+                <h2 class="text-2xl text-text">Thông báo từ nhà trường <span class="text-gray-500 text-sm font-normal hidden md:inline">(Tổng hợp 5 thông báo mới nhất)</span></h2>
+                <a href="https://student.husc.edu.vn/" target="_blank" class="text-primary hover:text-blue-700 font-medium flex items-center gap-1 transition-colors whitespace-nowrap">
+                    Xem tất cả
+                </a>
             </div>
             
             <div class="bg-white rounded-lg shadow-sm border border-divider overflow-hidden">
@@ -135,14 +137,14 @@
             </div>
         </div>
 
-        <div class="mb-12">
+        <div class="mb-12" id="utilities">
             <div class="flex justify-between items-end mb-6 border-b border-divider pb-2">
                 <h2 class="text-2xl text-text">Tiện ích sinh viên <span class="text-gray-500 text-sm font-normal">(Sử dụng miễn phí)</span></h2>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
                 <!-- Giả lập thi -->
-                <a th:href="@{/utilities/exam-simulation}" class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer block">
+                <a th:href="@{/utilities/exam-simulation}" class="hidden md:flex bg-white rounded-lg shadow-sm border border-divider p-6 items-start gap-4 hover:shadow-md transition-shadow cursor-pointer">
                     <div class="p-3 bg-gray-100 text-gray-900 rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -276,7 +278,7 @@
                 </a>
 
                 <!-- Kiểm tra tốc độ gõ -->
-                <a th:href="@{/utilities/typing-test}" class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer block group">
+                <a th:href="@{/utilities/typing-test}" class="hidden md:flex bg-white rounded-lg shadow-sm border border-divider p-6 items-start gap-4 hover:shadow-md transition-shadow cursor-pointer group">
                     <div class="p-3 bg-gray-100 text-gray-900 rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -289,7 +291,7 @@
                 </a>
 
                 <!-- Vòng quay may mắn -->
-                <a th:href="@{/utilities/lucky-wheel}" class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer block group">
+                <a th:href="@{/utilities/lucky-wheel}" class="hidden md:flex bg-white rounded-lg shadow-sm border border-divider p-6 items-start gap-4 hover:shadow-md transition-shadow cursor-pointer group">
                     <div class="p-3 bg-gray-100 text-gray-900 rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
@@ -304,7 +306,6 @@
 
                 <!-- Đếm ngược mùa thi -->
                 <a th:href="@{/utilities/exam-countdown}" class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer block group relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg uppercase tracking-wider shadow-sm z-10">NEW</div>
                     <div class="p-3 bg-gray-100 text-gray-900 rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5.33c0 1.06.422 2.078 1.172 2.828L9.586 16.586A4 4 0 0110 19.414V20H4M20 4v5.33c0 1.06-.422 2.078-1.172 2.828l-4.414 4.428A4 4 0 0014 19.414V20h6M4 4h16" />
@@ -318,7 +319,6 @@
 
                 <!-- Thẻ nhớ thông minh -->
                 <a th:href="@{/utilities/flashcards}" class="bg-white rounded-lg shadow-sm border border-divider p-6 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer block group relative overflow-hidden">
-                    <div class="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg uppercase tracking-wider shadow-sm z-10">NEW</div>
                     <div class="p-3 bg-gray-100 text-gray-900 rounded-lg shrink-0">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -335,7 +335,7 @@
         <!-- Góp ý & Phản hồi -->
         <div class="mb-12">
             <div class="border-b border-gray-200 pb-4 mb-6">
-                <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <h2 class="text-xl md:text-2xl font-bold text-gray-900 flex items-center gap-2 whitespace-nowrap overflow-x-auto">
                     Góp ý & Phản hồi
                     <span class="text-gray-500 text-sm font-normal">(Giúp cải thiện UniDocs tốt hơn)</span>
                 </h2>
@@ -352,7 +352,7 @@
                             </div>
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Nội dung <span class="text-red-500">*</span></label>
-                                <textarea id="content" name="content" rows="4" maxlength="500" required placeholder="Nhập góp ý của bạn (tối đa 500 ký tự)..." class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary outline-none transition-colors"></textarea>
+                                <textarea id="content" name="content" rows="4" maxlength="500" required placeholder="Vui lòng nhập góp ý tại đây nhé..." class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-primary focus:border-primary outline-none transition-colors"></textarea>
                                 <div class="flex justify-between mt-1">
                                     <span id="charCount" class="text-xs text-gray-500">0/500</span>
                                 </div>
@@ -370,10 +370,17 @@
                     <div class="bg-white rounded-lg shadow-sm border border-divider p-6 h-full flex flex-col">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="text-lg font-bold">Danh sách Góp ý</h3>
-                            <span class="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full border border-green-200">
-                                <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                                Live
-                            </span>
+                            <div class="flex items-center gap-3">
+                                <button type="button" onclick="toggleSort()" class="text-gray-500 hover:text-primary transition-colors flex items-center gap-1" title="Sắp xếp Mới nhất/Cũ nhất">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                                    </svg>
+                                </button>
+                                <span class="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full border border-green-200">
+                                    <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                                    Live
+                                </span>
+                            </div>
                         </div>
                         <div id="feedbackList" class="space-y-4 flex-1 overflow-y-auto max-h-[500px] pr-2">
                             <div th:each="fb : ${feedbacks}" th:id="'fb-' + ${fb.id}" class="border border-gray-200 rounded-lg p-4 bg-gray-50 transition-colors">
@@ -495,6 +502,42 @@
             <li class="flex items-center gap-2">
                 <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
                 <span class="font-medium">Đăng nhập Sinh viên:</span> <a href="https://student.husc.edu.vn/Account/Login" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+            </li>
+            <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <span class="font-medium">Trang Ngoại ngữ không chuyên:</span> <a href="https://flts.huflis.edu.vn/" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+            </li>
+            <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <span class="font-medium">Khoa CNTT:</span> <a href="https://it.husc.edu.vn" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+            </li>
+            <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <span class="font-medium">Khoa Môi trường:</span> <a href="https://khoamoitruonghue.edu.vn" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+            </li>
+            <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <span class="font-medium">CLB Hỗ trợ Lập trình:</span> <a href="https://www.facebook.com/clbhtlt.ithusc/" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+            </li>
+            <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <span class="font-medium">Khoa học Huế Confessions:</span> <a href="https://www.facebook.com/KhoaHocHueConfessions/" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+            </li>
+            <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <span class="font-medium">Gửi Confessions:</span> <a href="https://cfshusc.com" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+            </li>
+            <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <span class="font-medium">Trò chuyện cùng Confessions:</span> <a href="https://chat.cfshusc.com" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+            </li>
+            <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <span class="font-medium">Nhóm cộng đồng sinh viên ĐHKH:</span> <a href="https://www.facebook.com/groups/sinhvienkhoahochue/" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
+            </li>
+            <li class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                <span class="font-medium">Thư viện ĐHKH:</span> <a href="https://lib.husc.edu.vn" target="_blank" class="text-blue-600 hover:underline">Tại đây</a>
             </li>
         </ul>
         
@@ -939,5 +982,25 @@
             100% { background-color: #f9fafb; border-color: #e5e7eb; }
         }
     </style>
+
+    <script>
+        let sortAsc = false;
+        function toggleSort() {
+            const list = document.getElementById('feedbackList');
+            if (!list) return;
+            const items = Array.from(list.children).filter(item => item.id && item.id.startsWith('fb-'));
+            if (items.length <= 1) return;
+            items.reverse();
+            const emptyState = document.getElementById('emptyState');
+            items.forEach(item => {
+                if (emptyState) {
+                    list.insertBefore(item, emptyState);
+                } else {
+                    list.appendChild(item);
+                }
+            });
+            sortAsc = !sortAsc;
+        }
+    </script>
 </body>
 </html>
