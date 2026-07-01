@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${title}">UniDocs</title>
 
+    <!-- Google Analytics -->
+    <th:block th:with="gaId=${@environment.getProperty('GA_TRACKING_ID', 'G-M6LSLB0VKP')}">
+        <script async th:src="@{'https://www.googletagmanager.com/gtag/js?id=' + ${gaId}}"></script>
+        <script th:inline="javascript">
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', /*[[${gaId}]]*/ 'G-M6LSLB0VKP');
+        </script>
+    </th:block>
     <!-- SEO & GEO AI Mode Meta Tags -->
     <meta name="description" content="Nền tảng chia sẻ tài liệu học tập, đề thi đại học hàng đầu dành cho sinh viên. Khám phá các khóa học, tài liệu ôn thi HUSC, UniDocs.">
     <meta name="keywords" content="uni doc, unidoc, uni docs, unidocs, husc, đại học khoa học huế, tài liệu đại học, đề thi đại học, chia sẻ tài liệu">
